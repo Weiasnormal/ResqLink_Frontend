@@ -1,14 +1,8 @@
-import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
+import ReportScreen from './screens/ReportScreen'
 
 const Home = () => {
-  return (
-    <View>
-      <Text>Home</Text>
-    </View>
-  )
+  return <ReportScreen />
 }
 
 export default Home
-
-const styles = StyleSheet.create({})
