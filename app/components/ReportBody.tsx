@@ -132,8 +132,8 @@ const ReportBody = () => {
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.label}>Type of Emergency</Text>
-          <View style={styles.pickerContainer}>
+          <Text style={styles.label}>Type of Emergency <Text style={styles.required}>*</Text></Text>
+          <View style={[styles.pickerContainer, category === '' ? styles.pickerError : null]}>
             <Picker
               selectedValue={category}
               onValueChange={setCategory}
@@ -148,39 +148,56 @@ const ReportBody = () => {
 
         <View style={styles.section}>
           <Text style={styles.label}>Details</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Title"
-            value={title}
-            onChangeText={setTitle}
-            placeholderTextColor="#999"
-            
-          />
-          <TextInput
-            style={[styles.input, styles.textArea]}
-            placeholder="Description (Optional)"
-            value={description}
-            onChangeText={setDescription}
-            multiline
-            numberOfLines={4}
-            textAlignVertical="top"
-            placeholderTextColor="#999"
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Location"
-            value={location}
-            onChangeText={setLocation}
-            placeholderTextColor="#999"
-          />
+          <View style={styles.inputContainer}>
+            <Text style={styles.inputLabel}>Title <Text style={styles.required}>*</Text></Text>
+            <TextInput
+              style={[styles.input, title.trim() === '' ? styles.inputError : null]}
+              placeholder="Enter emergency title"
+              value={title}
+              onChangeText={setTitle}
+              placeholderTextColor="#999"
+            />
+          </View>
+          <View style={styles.inputContainer}>
+            <Text style={styles.inputLabel}>Description (Optional)</Text>
+            <TextInput
+              style={[styles.input, styles.textArea]}
+              placeholder="Provide additional details (optional)"
+              value={description}
+              onChangeText={setDescription}
+              multiline
+              numberOfLines={4}
+              textAlignVertical="top"
+              placeholderTextColor="#999"
+            />
+          </View>
+          <View style={styles.inputContainer}>
+            <Text style={styles.inputLabel}>Location <Text style={styles.required}>*</Text></Text>
+            <TextInput
+              style={[styles.input, location.trim() === '' ? styles.inputError : null]}
+              placeholder="Enter exact location"
+              value={location}
+              onChangeText={setLocation}
+              placeholderTextColor="#999"
+            />
+          </View>
         </View>
 
+        {!isFormValid() && (
+          <View style={styles.validationContainer}>
+            <Ionicons name="information-circle-outline" size={16} color="#FF6B6B" />
+            <Text style={styles.validationText}>Please fill in all required fields (*) to submit your report</Text>
+          </View>
+        )}
+
         <TouchableOpacity
-          style={[styles.reportButton, !isFormValid() && styles.reportButtonDisabled]}
+          style={[styles.reportButton, isFormValid() ? styles.reportButtonActive : styles.reportButtonDisabled]}
           onPress={handleReport}
           disabled={!isFormValid()}
         >
-          <Text style={styles.reportButtonText}>Report</Text>
+          <Text style={[styles.reportButtonText, !isFormValid() && styles.reportButtonTextDisabled]}>
+            {isFormValid() ? 'Submit Emergency Report' : 'Complete Required Fields'}
+          </Text>
         </TouchableOpacity>
       </View>
     </ScrollView>
@@ -285,6 +302,10 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: '#fff',
   },
+  pickerError: {
+    borderColor: '#FFB3B3',
+    backgroundColor: '#FFF8F8',
+  },
   picker: {
     height: 55,
   },
@@ -301,21 +322,71 @@ const styles = StyleSheet.create({
     height: 100,
     paddingTop: 15,
   },
+  inputContainer: {
+    marginBottom: 15,
+  },
+  inputLabel: {
+    fontSize: 14,
+    color: '#333',
+    marginBottom: 6,
+    fontWeight: '500',
+  },
+  required: {
+    color: '#FF4444',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  inputError: {
+    borderColor: '#FFB3B3',
+    backgroundColor: '#FFF8F8',
+  },
   reportButton: {
-    backgroundColor: '#FF8C00',
+    backgroundColor: '#E0E0E0',
     padding: 18,
     borderRadius: 8,
     alignItems: 'center',
     marginTop: 20,
     marginBottom: 40,
   },
+  reportButtonActive: {
+    backgroundColor: '#FF4444',
+    shadowColor: '#FF4444',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    elevation: 8,
+  },
   reportButtonDisabled: {
-    backgroundColor: '#CCC',
+    backgroundColor: '#E0E0E0',
   },
   reportButtonText: {
     color: '#fff',
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '600',
+    textAlign: 'center',
+  },
+  reportButtonTextDisabled: {
+    color: '#999',
+  },
+  validationContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFF5F5',
+    padding: 12,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: '#FFE0E0',
+    marginTop: 10,
+  },
+  validationText: {
+    flex: 1,
+    marginLeft: 8,
+    fontSize: 14,
+    color: '#CC0000',
+    fontWeight: '500',
   },
 });
 
