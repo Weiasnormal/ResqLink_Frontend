@@ -101,23 +101,34 @@ const ReportBody = () => {
 
         <View style={styles.section}>
           <Text style={styles.label}>Add Photo {photos.length}/5 (Optional)</Text>
-          <TouchableOpacity style={styles.photoButton} onPress={pickImage}>
-            <Ionicons name="camera-outline" size={24} color="#FF8C00" />
-            <Text style={styles.photoButtonText}>Add Photo</Text>
-          </TouchableOpacity>
-          
-          {photos.length > 0 && (
-            <View style={styles.photosList}>
-              {photos.map((photo) => (
-                <View key={photo.id} style={styles.photoItem}>
-                  <Text style={styles.photoName}>Photo {photos.indexOf(photo) + 1}</Text>
-                  <TouchableOpacity onPress={() => removePhoto(photo.id)}>
-                    <Ionicons name="close-circle" size={20} color="#FF4444" />
-                  </TouchableOpacity>
-                </View>
-              ))}
-            </View>
-          )}
+          <View style={styles.photoContainer}>
+            <TouchableOpacity style={styles.photoButton} onPress={pickImage}>
+              <Ionicons name="camera-outline" size={24} color="#FF8C00" />
+              <Text style={styles.photoButtonText}>Add Photo</Text>
+            </TouchableOpacity>
+            
+            {photos.length > 0 && (
+              <ScrollView 
+                style={styles.photosList}
+                contentContainerStyle={styles.photosListContent}
+                horizontal={true}
+                showsHorizontalScrollIndicator={false}
+              >
+                {photos.map((photo) => (
+                  <View key={photo.id} style={styles.photoItem}>
+                    <TouchableOpacity 
+                      style={styles.closeButton}
+                      onPress={() => removePhoto(photo.id)}
+                    >
+                      <Ionicons name="close-circle" size={18} color="#FF4444" />
+                    </TouchableOpacity>
+                    <Ionicons name="image-outline" size={20} color="#666" />
+                    <Text style={styles.photoName}>Photo {photos.indexOf(photo) + 1}</Text>
+                  </View>
+                ))}
+              </ScrollView>
+            )}
+          </View>
         </View>
 
         <View style={styles.section}>
@@ -210,6 +221,8 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   photoButton: {
+    width: 100,
+    height: 95,
     borderWidth: 2,
     borderColor: '#FF8C00',
     borderStyle: 'dashed',
@@ -222,24 +235,49 @@ const styles = StyleSheet.create({
   photoButtonText: {
     color: '#FF8C00',
     marginTop: 8,
-    fontSize: 16,
+    fontSize: 10,
+    textAlign: 'center',
     fontWeight: '500',
   },
+  photoContainer: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 12,
+  },
   photosList: {
-    marginTop: 15,
+    flex: 1,
+    maxHeight: 95,
+  },
+  photosListContent: {
+    flexDirection: 'row',
+    gap: 8,
+    alignItems: 'flex-start',
+    paddingRight: 10,
   },
   photoItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: 'column',
+    justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#F5F5F5',
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 8,
+    padding: 8,
+    borderRadius: 6,
+    width: 100,
+    height: 95,
+    position: 'relative',
   },
   photoName: {
-    fontSize: 14,
+    fontSize: 12,
     color: '#333',
+    marginTop: 4,
+    textAlign: 'center',
+  },
+  closeButton: {
+    position: 'absolute',
+    top: -2,
+    right: -2,
+    backgroundColor: '#fff',
+    borderRadius: 9,
+    zIndex: 1,
   },
   pickerContainer: {
     borderWidth: 1,
