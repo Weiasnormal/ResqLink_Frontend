@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, Alert, ScrollView } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
+import React, { useState, useRef } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, Alert, ScrollView, Animated } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -15,6 +14,8 @@ const ReportBody = () => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [location, setLocation] = useState('');
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownAnimation = useRef(new Animated.Value(0)).current;
 
   const categories = [
     { label: 'Select Category', value: '' },
@@ -58,6 +59,27 @@ const ReportBody = () => {
     setPhotos(photos.filter(photo => photo.id !== id));
   };
 
+  const toggleDropdown = () => {
+    const toValue = isDropdownOpen ? 0 : 1;
+    setIsDropdownOpen(!isDropdownOpen);
+    
+    Animated.timing(dropdownAnimation, {
+      toValue,
+      duration: 300,
+      useNativeDriver: false,
+    }).start();
+  };
+
+  const selectCategory = (categoryValue: string, categoryLabel: string) => {
+    setCategory(categoryValue);
+    toggleDropdown();
+  };
+
+  const getSelectedCategoryLabel = () => {
+    const selectedCategory = categories.find(cat => cat.value === category);
+    return selectedCategory ? selectedCategory.label : 'Select Category';
+  };
+
   const handleReport = () => {
     const reportData = {
       title,
@@ -90,7 +112,15 @@ const ReportBody = () => {
 
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      <View style={styles.content}>
+      <TouchableOpacity 
+        style={styles.content} 
+        activeOpacity={1} 
+        onPress={() => {
+          if (isDropdownOpen) {
+            toggleDropdown();
+          }
+        }}
+      >
         <View style={styles.section}>
           <View style={styles.titleRow}>
             <Text style={styles.sectionTitle}>Report an Emergency</Text>
@@ -133,16 +163,72 @@ const ReportBody = () => {
 
         <View style={styles.section}>
           <Text style={styles.label}>Type of Emergency <Text style={styles.required}>*</Text></Text>
-          <View style={[styles.pickerContainer, category === '' ? styles.pickerError : null]}>
-            <Picker
-              selectedValue={category}
-              onValueChange={setCategory}
-              style={styles.picker}
+          <View style={styles.dropdownContainer}>
+            <TouchableOpacity
+              style={[styles.dropdownButton, category === '' ? styles.pickerError : null]}
+              onPress={toggleDropdown}
             >
-              {categories.map((cat) => (
-                <Picker.Item key={cat.value} label={cat.label} value={cat.value} />
-              ))}
-            </Picker>
+              <Text style={[styles.dropdownButtonText, category === '' && styles.placeholderText]}>
+                {getSelectedCategoryLabel()}
+              </Text>
+              <Animated.View
+                style={{
+                  transform: [{
+                    rotate: dropdownAnimation.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: ['0deg', '180deg'],
+                    })
+                  }]
+                }}
+              >
+                <Ionicons name="chevron-down" size={20} color="#666" />
+              </Animated.View>
+            </TouchableOpacity>
+            
+            {isDropdownOpen && (
+              <Animated.View
+                style={[
+                  styles.dropdownMenu,
+                  {
+                    opacity: dropdownAnimation,
+                    transform: [{
+                      scaleY: dropdownAnimation.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [0, 1],
+                      })
+                    }]
+                  }
+                ]}
+              >
+                <ScrollView 
+                  style={styles.dropdownScroll} 
+                  showsVerticalScrollIndicator={true}
+                  nestedScrollEnabled={true}
+                  keyboardShouldPersistTaps="handled"
+                >
+                  {categories.map((cat) => (
+                    <TouchableOpacity
+                      key={cat.value}
+                      style={[
+                        styles.dropdownItem,
+                        category === cat.value && styles.dropdownItemSelected
+                      ]}
+                      onPress={() => selectCategory(cat.value, cat.label)}
+                    >
+                      <Text style={[
+                        styles.dropdownItemText,
+                        category === cat.value && styles.dropdownItemTextSelected
+                      ]}>
+                        {cat.label}
+                      </Text>
+                      {category === cat.value && (
+                        <Ionicons name="checkmark" size={18} color="#FF4444" />
+                      )}
+                    </TouchableOpacity>
+                  ))}
+                </ScrollView>
+              </Animated.View>
+            )}
           </View>
         </View>
 
@@ -199,7 +285,7 @@ const ReportBody = () => {
             {isFormValid() ? 'Submit Emergency Report' : 'Complete Required Fields'}
           </Text>
         </TouchableOpacity>
-      </View>
+      </TouchableOpacity>
     </ScrollView>
   );
 };
@@ -296,18 +382,79 @@ const styles = StyleSheet.create({
     borderRadius: 9,
     zIndex: 1,
   },
-  pickerContainer: {
+  dropdownContainer: {
+    position: 'relative',
+    zIndex: 1000,
+  },
+  dropdownButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     borderWidth: 1,
     borderColor: '#000000ff',
     borderRadius: 8,
     backgroundColor: '#fff',
+    paddingHorizontal: 15,
+    paddingVertical: 16,
+    minHeight: 55,
+  },
+  dropdownButtonText: {
+    fontSize: 16,
+    color: '#333',
+    flex: 1,
+  },
+  placeholderText: {
+    color: '#999',
+  },
+  dropdownMenu: {
+    position: 'absolute',
+    top: '100%',
+    left: 0,
+    right: 0,
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+    borderTopWidth: 0,
+    borderBottomLeftRadius: 8,
+    borderBottomRightRadius: 8,
+    maxHeight: 400,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 8,
+    zIndex: 1001,
+  },
+  dropdownScroll: {
+    maxHeight: 350,
+  },
+  dropdownItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 15,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F0F0F0',
+  },
+  dropdownItemSelected: {
+    backgroundColor: '#FFF0F0',
+  },
+  dropdownItemText: {
+    fontSize: 16,
+    color: '#333',
+    flex: 1,
+  },
+  dropdownItemTextSelected: {
+    color: '#FF4444',
+    fontWeight: '600',
   },
   pickerError: {
     borderColor: '#FFB3B3',
     backgroundColor: '#FFF8F8',
-  },
-  picker: {
-    height: 55,
   },
   input: {
     borderWidth: 1,
@@ -332,7 +479,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   required: {
-    color: '#FF4444',
+    color: '#FC8100',
     fontSize: 16,
     fontWeight: 'bold',
   },
@@ -349,8 +496,8 @@ const styles = StyleSheet.create({
     marginBottom: 40,
   },
   reportButtonActive: {
-    backgroundColor: '#FF4444',
-    shadowColor: '#FF4444',
+    backgroundColor: '#FC8100',
+    shadowColor: '#FC8100',
     shadowOffset: {
       width: 0,
       height: 4,
@@ -385,7 +532,7 @@ const styles = StyleSheet.create({
     flex: 1,
     marginLeft: 8,
     fontSize: 14,
-    color: '#CC0000',
+    color: '#FC8100',
     fontWeight: '500',
   },
 });
