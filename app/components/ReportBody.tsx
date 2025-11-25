@@ -1,5 +1,7 @@
-import React, { useState, useRef } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, Alert, ScrollView, Animated } from 'react-native';
+import React, { useState, useRef, useCallback } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, Alert, ScrollView, Animated, ActivityIndicator } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
+import * as Location from 'expo-location';
 import * as ImagePicker from 'expo-image-picker';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -8,14 +10,112 @@ interface Photo {
   id: string;
 }
 
+interface LocationCoords {
+  latitude: number;
+  longitude: number;
+}
+
 const ReportBody = () => {
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [category, setCategory] = useState('');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [location, setLocation] = useState('');
+  const [coords, setCoords] = useState<LocationCoords | null>(null);
+  const [address, setAddress] = useState('');
+  const [isLocationLoading, setIsLocationLoading] = useState(false);
+  const [locationError, setLocationError] = useState<string | null>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownAnimation = useRef(new Animated.Value(0)).current;
+
+  // Memoized location fetcher with no dependencies that could cause loops
+  const fetchLocation = useCallback(async () => {
+    if (isLocationLoading) return; // Prevent duplicate calls
+    
+    setIsLocationLoading(true);
+    setLocationError(null);
+    setCoords(null);
+    setAddress('');
+
+    try {
+      // Request foreground location permission
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      
+      if (status !== 'granted') {
+        setLocationError('Location permission denied. Unable to auto-fill location.');
+        return;
+      }
+
+      // Check if location services are enabled
+      const servicesEnabled = await Location.hasServicesEnabledAsync();
+      if (!servicesEnabled) {
+        setLocationError('Location services are disabled. Please enable them in device settings.');
+        return;
+      }
+
+      // Get current position with high accuracy
+      const location = await Location.getCurrentPositionAsync({
+        accuracy: Location.Accuracy.High,
+        timeInterval: 5000,
+        distanceInterval: 1,
+      });
+
+      const { latitude, longitude } = location.coords;
+      setCoords({ latitude, longitude });
+
+      // Reverse geocode to get human-readable address
+      try {
+        const reverseGeocode = await Location.reverseGeocodeAsync({
+          latitude,
+          longitude,
+        });
+
+        if (reverseGeocode.length > 0) {
+          const result = reverseGeocode[0];
+          const addressParts = [
+            result.streetNumber,
+            result.street,
+            result.district,
+            result.city,
+            result.region,
+            result.postalCode,
+            result.country,
+          ].filter(Boolean);
+
+          const formattedAddress = addressParts.length > 0 
+            ? addressParts.join(', ')
+            : `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`;
+          
+          setAddress(formattedAddress);
+        } else {
+          // Fallback to coordinates
+          setAddress(`${latitude.toFixed(6)}, ${longitude.toFixed(6)}`);
+        }
+      } catch (geocodeError) {
+        console.log('Reverse geocoding failed, using coordinates:', geocodeError);
+        setAddress(`${latitude.toFixed(6)}, ${longitude.toFixed(6)}`);
+      }
+
+    } catch (error: any) {
+      console.error('Error fetching location:', error);
+      
+      if (error.code === 'E_LOCATION_TIMEOUT') {
+        setLocationError('Location request timed out. Please check your GPS signal.');
+      } else if (error.code === 'E_LOCATION_UNAVAILABLE') {
+        setLocationError('Location temporarily unavailable. Please try again.');
+      } else {
+        setLocationError('Failed to get location. Please ensure GPS is enabled.');
+      }
+    } finally {
+      setIsLocationLoading(false);
+    }
+  }, []); // Empty dependency array - no dependencies that could cause loops
+
+  // Fetch location when screen comes into focus - NO dependency on fetchLocation to avoid loops
+  useFocusEffect(
+    useCallback(() => {
+      fetchLocation();
+    }, [fetchLocation]) // Only fetchLocation as dependency, which has empty deps
+  );
 
   const categories = [
     { label: 'Select Category', value: '' },
@@ -84,7 +184,8 @@ const ReportBody = () => {
     const reportData = {
       title,
       description,
-      location,
+      location: address,
+      coords,
       category,
       photos: photos.map(photo => photo.uri),
     };
@@ -101,13 +202,14 @@ const ReportBody = () => {
     // Reset form
     setTitle('');
     setDescription('');
-    setLocation('');
+    setAddress('');
+    setCoords(null);
     setCategory('');
     setPhotos([]);
   };
 
   const isFormValid = () => {
-    return title.trim() !== '' && category !== '' && location.trim() !== '';
+    return title.trim() !== '' && category !== '' && address.trim() !== '';
   };
 
   return (
@@ -258,14 +360,48 @@ const ReportBody = () => {
             />
           </View>
           <View style={styles.inputContainer}>
-            <Text style={styles.inputLabel}>Location <Text style={styles.required}>*</Text></Text>
+            <View style={styles.locationHeader}>
+              <Text style={styles.inputLabel}>Current Location <Text style={styles.required}>*</Text></Text>
+              <TouchableOpacity
+                style={styles.locationRefreshButton}
+                onPress={fetchLocation}
+                disabled={isLocationLoading}
+              >
+                <Ionicons 
+                  name={isLocationLoading ? "sync" : "refresh-outline"} 
+                  size={16} 
+                  color="#FF8C00" 
+                />
+                <Text style={styles.locationRefreshText}>
+                  {isLocationLoading ? 'Updating...' : 'Refresh GPS'}
+                </Text>
+              </TouchableOpacity>
+            </View>
+            
+            {/* Read-only location input field */}
             <TextInput
-              style={[styles.input, location.trim() === '' ? styles.inputError : null]}
-              placeholder="Enter exact location"
-              value={location}
-              onChangeText={setLocation}
+              style={[styles.input, styles.readOnlyInput, address.trim() === '' ? styles.inputError : null]}
+              placeholder="Location will auto-fill from GPS..."
+              value={address}
+              editable={false}
+              selectTextOnFocus={false}
               placeholderTextColor="#999"
             />
+            
+            {/* Loading indicator overlay */}
+            {isLocationLoading && (
+              <View style={styles.loadingOverlay}>
+                <ActivityIndicator size="small" color="#FF8C00" />
+                <Text style={styles.loadingText}>Getting your location...</Text>
+              </View>
+            )}
+            
+            {locationError && (
+              <View style={styles.locationErrorContainer}>
+                <Ionicons name="warning-outline" size={14} color="#FF6B6B" />
+                <Text style={styles.locationErrorText}>{locationError}</Text>
+              </View>
+            )}
           </View>
         </View>
 
@@ -286,6 +422,8 @@ const ReportBody = () => {
           </Text>
         </TouchableOpacity>
       </TouchableOpacity>
+
+
     </ScrollView>
   );
 };
@@ -533,6 +671,65 @@ const styles = StyleSheet.create({
     marginLeft: 8,
     fontSize: 14,
     color: '#FC8100',
+    fontWeight: '500',
+  },
+  locationHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 6,
+  },
+  locationRefreshButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    backgroundColor: '#FFF9F0',
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: '#FF8C00',
+  },
+  locationRefreshText: {
+    marginLeft: 4,
+    fontSize: 12,
+    color: '#FF8C00',
+    fontWeight: '600',
+  },
+  locationErrorContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 4,
+    paddingHorizontal: 4,
+  },
+  locationErrorText: {
+    marginLeft: 6,
+    fontSize: 12,
+    color: '#FF6B6B',
+    flex: 1,
+  },
+  readOnlyInput: {
+    backgroundColor: '#F8F9FA',
+    color: '#333',
+    fontWeight: '500',
+  },
+  loadingOverlay: {
+    position: 'absolute',
+    top: 45,
+    left: 0,
+    right: 0,
+    height: 55,
+    backgroundColor: 'rgba(248, 249, 250, 0.95)',
+    borderRadius: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: '#FF8C00',
+  },
+  loadingText: {
+    marginLeft: 8,
+    fontSize: 14,
+    color: '#FF8C00',
     fontWeight: '500',
   },
 });

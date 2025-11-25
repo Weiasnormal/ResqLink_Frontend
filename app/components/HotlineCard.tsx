@@ -1,16 +1,16 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Linking, Alert, Clipboard } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { Department } from '../data/emergencyDepartments';
+import { useLocation } from '../hooks/useLocation';
 
 interface HotlineCardProps {
-  department: {
-    name: string;
-    address: string;
-    contacts: string[];
-  };
+  department: Department;
 }
 
 const HotlineCard: React.FC<HotlineCardProps> = ({ department }) => {
+  const { openDirections, isLoading } = useLocation();
+
   const handleCall = (phoneNumber: string) => {
     const cleanNumber = phoneNumber.replace(/[^\d+]/g, '');
     Linking.openURL(`tel:${cleanNumber}`);
@@ -25,11 +25,24 @@ const HotlineCard: React.FC<HotlineCardProps> = ({ department }) => {
     }
   };
 
-  const handleDirection = () => {
-    // Open maps app with department address
-    const encodedAddress = encodeURIComponent(department.address);
-    Linking.openURL(`maps:0,0?q=${encodedAddress}`);
+  const handleDirection = async () => {
+    if (department.latitude && department.longitude) {
+      await openDirections(
+        {
+          latitude: department.latitude,
+          longitude: department.longitude,
+        },
+        department.name
+      );
+    } else {
+      // Fallback to address-based navigation
+      const encodedAddress = encodeURIComponent(department.address);
+      Linking.openURL(`https://www.google.com/maps/search/?api=1&query=${encodedAddress}`);
+    }
   };
+
+  // Check if directions are available
+  const hasCoordinates = department.latitude && department.longitude;
 
   return (
     <View style={styles.card}>
@@ -37,20 +50,20 @@ const HotlineCard: React.FC<HotlineCardProps> = ({ department }) => {
       <Text style={styles.address}>{department.address}</Text>
       
       <View style={styles.contactsContainer}>
-        {department.contacts.map((contact, index) => (
+        {department.phones.map((phone, index) => (
           <View key={index} style={styles.contactRow}>
-            <Text style={styles.contactNumber}>{contact}</Text>
+            <Text style={styles.contactNumber}>{phone}</Text>
             <View style={styles.contactActions}>
               <TouchableOpacity 
                 style={[styles.actionButton, styles.callButton]} 
-                onPress={() => handleCall(contact)}
+                onPress={() => handleCall(phone)}
                 activeOpacity={0.7}
               >
                 <Ionicons name="call" size={20} color="#FFFFFF" />
               </TouchableOpacity>
               <TouchableOpacity 
                 style={[styles.actionButton, styles.copyButton]} 
-                onPress={() => handleCopy(contact)}
+                onPress={() => handleCopy(phone)}
                 activeOpacity={0.7}
               >
                 <Ionicons name="copy" size={20} color="#FF8C42" />
@@ -61,12 +74,25 @@ const HotlineCard: React.FC<HotlineCardProps> = ({ department }) => {
       </View>
       
       <TouchableOpacity 
-        style={styles.directionButton} 
+        style={[
+          styles.directionButton, 
+          !hasCoordinates && styles.directionButtonDisabled
+        ]} 
         onPress={handleDirection}
         activeOpacity={0.7}
+        disabled={isLoading}
       >
-        <Ionicons name="location-outline" size={18} color="#FF8C42" />
-        <Text style={styles.directionText}>Direction</Text>
+        <Ionicons 
+          name="location-outline" 
+          size={18} 
+          color={hasCoordinates ? "#FF8C42" : "#ccc"} 
+        />
+        <Text style={[
+          styles.directionText,
+          !hasCoordinates && styles.directionTextDisabled
+        ]}>
+          {isLoading ? 'Loading...' : hasCoordinates ? 'Direction' : 'No Location'}
+        </Text>
       </TouchableOpacity>
     </View>
   );
@@ -153,6 +179,13 @@ const styles = StyleSheet.create({
   copyButton: {
     backgroundColor: '#ffffff',
     borderColor: '#FF8C42',
+  },
+  directionButtonDisabled: {
+    borderColor: '#ccc',
+    backgroundColor: '#f5f5f5',
+  },
+  directionTextDisabled: {
+    color: '#ccc',
   },
 });
 

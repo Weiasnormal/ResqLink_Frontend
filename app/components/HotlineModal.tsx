@@ -14,14 +14,9 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import HotlineCard from './HotlineCard';
+import { Department } from '../data/emergencyDepartments';
 
 const { height: screenHeight } = Dimensions.get('window');
-
-interface Department {
-  name: string;
-  address: string;
-  contacts: string[];
-}
 
 interface HotlineModalProps {
   visible: boolean;
