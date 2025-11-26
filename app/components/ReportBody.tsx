@@ -335,27 +335,13 @@ const ReportBody = () => {
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.label}>Details</Text>
           <View style={styles.inputContainer}>
-            <Text style={styles.inputLabel}>Title <Text style={styles.required}>*</Text></Text>
+            <Text style={styles.inputLabel}>Description <Text style={styles.required}>*</Text></Text>
             <TextInput
               style={[styles.input, title.trim() === '' ? styles.inputError : null]}
-              placeholder="Enter emergency title"
+              placeholder="Describe the emergency situation"
               value={title}
               onChangeText={setTitle}
-              placeholderTextColor="#999"
-            />
-          </View>
-          <View style={styles.inputContainer}>
-            <Text style={styles.inputLabel}>Description (Optional)</Text>
-            <TextInput
-              style={[styles.input, styles.textArea]}
-              placeholder="Provide additional details (optional)"
-              value={description}
-              onChangeText={setDescription}
-              multiline
-              numberOfLines={4}
-              textAlignVertical="top"
               placeholderTextColor="#999"
             />
           </View>
@@ -664,7 +650,7 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     borderWidth: 1,
     borderColor: '#FFE0E0',
-    marginTop: 10,
+    marginTop: 5,
   },
   validationText: {
     flex: 1,
