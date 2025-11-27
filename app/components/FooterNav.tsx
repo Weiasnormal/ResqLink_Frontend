@@ -37,13 +37,13 @@ const FooterNav = ({ activeTab = 'report', onTabPress }: FooterNavProps) => {
               <Ionicons
                 name={item.key === activeTab ? item.activeIcon as any : item.icon as any}
                 size={24}
-                color={item.key === activeTab ? '#000' : '#999'}
+                color={item.key === activeTab ? '#FF8C00' : '#999'}
               />
             )}
             <Text style={[
               styles.tabLabel,
               item.key === activeTab && styles.activeTabLabel,
-              item.isSpecial && styles.sosLabel
+              item.isSpecial && styles.sosLabel 
             ]}>
               {item.name}
             </Text>
@@ -89,8 +89,9 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   activeTabLabel: {
-    color: '#000',
+    color: '#FF8C00',
     fontWeight: '600',
+    
   },
   sosLabel: {
     color: '#FF4444',
@@ -98,12 +99,12 @@ const styles = StyleSheet.create({
   },
   activeIndicator: {
     position: 'absolute',
-    bottom: -10,
+    bottom: -1,
     left: '50%',
     marginLeft: -15,
     width: 30,
     height: 3,
-    backgroundColor: '#000',
+    backgroundColor: '#FF8C00',
     borderRadius: 2,
   },
 });

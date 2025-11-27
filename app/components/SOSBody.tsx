@@ -198,7 +198,7 @@ const SOSBody = () => {
               </Text>
               <Ionicons 
                 name="arrow-forward" 
-                size={20} 
+                size={25} 
                 color={isSliding ? "#fff" : "#000000ff"} 
                 style={styles.arrowIcon} 
               />
@@ -360,12 +360,14 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#000000ff',
     marginRight: 8,
+    position: 'absolute',
   },
   sliderTextActive: {
     color: '#fff',
   },
   arrowIcon: {
     marginLeft: 4,
+    paddingLeft: 230,
   },
 });
 
