@@ -1,8 +1,8 @@
 {
   "expo": {
-    "scheme": "resqlink",
-    "name": "ResqLink",
-    "slug": "ResqLink",
+    "scheme": "resqline",
+    "name": "ResqLine",
+    "slug": "ResqLine",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/Logo.png",
