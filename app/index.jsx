@@ -4,4 +4,4 @@ const App = () => {
   return <IntroScreen />;
 };
 
-export default App;h
+export default App;
