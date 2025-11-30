@@ -40,21 +40,21 @@ const HomeBody: React.FC<HomeBodyProps> = ({ onTabPress }) => {
     {
       id: 'report',
       title: 'Report',
-      iconSource: require('../../assets/table-report.png'),
+      iconSource: require('../../assets/Home/table-report.png'),
       backgroundColor: '#E6F3FF',
       onPress: () => onTabPress?.('report')
     },
     {
       id: 'hotline',
       title: 'Hotline',
-      iconSource: require('../../assets/hotline.png'),
+      iconSource: require('../../assets/Home/hotline.png'),
       backgroundColor: '#FFE6E6',
       onPress: () => onTabPress?.('hotline')
     },
     {
       id: 'history',
       title: 'History',
-      iconSource: require('../../assets/history.png'),
+      iconSource: require('../../assets/Home/history.png'),
       backgroundColor: '#FFEDE6',
       onPress: () => Alert.alert('Coming Soon', 'History feature is under development.')
     }
