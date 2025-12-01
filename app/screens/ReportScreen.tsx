@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, View, StatusBar } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import Header from '../components/Header';
-import ReportBody from '../components/ReportBody';
+import ReportBody from '../components/body/ReportBody';
 import FooterNav from '../components/FooterNav';
 
 interface ReportScreenProps {

@@ -12,12 +12,12 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
-import HotlineModal from './HotlineModal';
-import ReportCard, { Report } from './ReportCard';
-import { EMERGENCY_DEPARTMENTS, DepartmentCategory } from '../data/emergencyDepartments';
-import HospitalIcon from '../../assets/EmergencyIcons/hospital.svg';
-import FireIcon from '../../assets/EmergencyIcons/fire.svg';
-import PoliceIcon from '../../assets/EmergencyIcons/police.svg';
+import HotlineModal from '../card_modal/HotlineModal';
+import ReportCard, { Report } from '../card_modal/ReportCard';
+import { EMERGENCY_DEPARTMENTS, DepartmentCategory } from '../../data/emergencyDepartments';
+import HospitalIcon from '../../../assets/EmergencyIcons/hospital.svg';
+import FireIcon from '../../../assets/EmergencyIcons/fire.svg';
+import PoliceIcon from '../../../assets/EmergencyIcons/police.svg';
 
 interface HomeBodyProps {
   onTabPress?: (tab: string) => void;
@@ -40,21 +40,21 @@ const HomeBody: React.FC<HomeBodyProps> = ({ onTabPress }) => {
     {
       id: 'report',
       title: 'Report',
-      iconSource: require('../../assets/Home/table-report.png'),
+      iconSource: require('../../../assets/Home/table-report.png'),
       backgroundColor: '#E6F3FF',
       onPress: () => onTabPress?.('report')
     },
     {
       id: 'hotline',
       title: 'Hotline',
-      iconSource: require('../../assets/Home/hotline.png'),
+      iconSource: require('../../../assets/Home/hotline.png'),
       backgroundColor: '#FFE6E6',
       onPress: () => onTabPress?.('hotline')
     },
     {
       id: 'history',
       title: 'History',
-      iconSource: require('../../assets/Home/history.png'),
+      iconSource: require('../../../assets/Home/history.png'),
       backgroundColor: '#FFEDE6',
       onPress: () => Alert.alert('Coming Soon', 'History feature is under development.')
     }

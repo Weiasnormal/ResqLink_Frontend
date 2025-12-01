@@ -14,7 +14,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import HotlineCard from './HotlineCard';
-import { Department } from '../data/emergencyDepartments';
+import { Department } from '../../data/emergencyDepartments';
 
 const { height: screenHeight } = Dimensions.get('window');
 

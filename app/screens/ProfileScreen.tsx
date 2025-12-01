@@ -7,7 +7,7 @@ import {
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 import FooterNav from '../components/FooterNav';
-import ProfileBody from '../components/ProfileBody';
+import ProfileBody from '../components/body/ProfileBody';
 
 interface ProfileScreenProps {
   onTabPress: (tab: string) => void;

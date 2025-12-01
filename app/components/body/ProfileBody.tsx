@@ -9,11 +9,11 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 
-import { locationService, UserLocation } from '../services/locationService';
-import { useUserProfile } from '../contexts/UserProfileContext';
+import { locationService, UserLocation } from '../../services/locationService';
+import { useUserProfile } from '../../contexts/UserProfileContext';
 
-import Profilebg from '../../assets/Profilebg.svg';
-import Profile from '../../assets/Profile.svg';
+import Profilebg from '../../../assets/Profilebg.svg';
+import Profile from '../../../assets/Profile.svg';
 
 interface ProfileBodyProps {
   onTabPress?: (tab: string) => void;

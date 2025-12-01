@@ -51,7 +51,7 @@ const ReportCard: React.FC<ReportCardProps> = ({ report, onPress }) => {
       <View style={styles.reportMainContent}>
         <View style={styles.reportImageContainer}>
           <Image 
-            source={require('../../assets/defaultimage.png')} 
+            source={require('../../../assets/defaultimage.png')} 
             style={styles.reportImage}
             resizeMode="cover"
           />

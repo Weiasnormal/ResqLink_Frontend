@@ -11,7 +11,7 @@ import {
   Dimensions 
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import SOSAlertModal from './SOSAlertModal';
+import SOSAlertModal from '../card_modal/SOSAlertModal';
 
 const { width: screenWidth } = Dimensions.get('window');
 const SLIDER_WIDTH = screenWidth - 60;

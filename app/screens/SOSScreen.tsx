@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, View, StatusBar } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import Header from '../components/Header';
-import SOSBody from '../components/SOSBody';
+import SOSBody from '../components/body/SOSBody';
 import FooterNav from '../components/FooterNav';
 
 interface SOSScreenProps {

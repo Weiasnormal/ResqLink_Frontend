@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import HotlineModal from './HotlineModal';
-import { EMERGENCY_DEPARTMENTS, Department, DepartmentCategory } from '../data/emergencyDepartments';
+import HotlineModal from '../card_modal/HotlineModal';
+import { EMERGENCY_DEPARTMENTS, Department, DepartmentCategory } from '../../data/emergencyDepartments';
 
 // Import SVG icons as React components
-import HospitalIcon from '../../assets/EmergencyIcons/hospital.svg';
-import FireIcon from '../../assets/EmergencyIcons/fire.svg';
-import PoliceIcon from '../../assets/EmergencyIcons/police.svg';
-import PowerIcon from '../../assets/EmergencyIcons/power.svg';
-import DisasterIcon from '../../assets/EmergencyIcons/disaster.svg';
+import HospitalIcon from '../../../assets/EmergencyIcons/hospital.svg';
+import FireIcon from '../../../assets/EmergencyIcons/fire.svg';
+import PoliceIcon from '../../../assets/EmergencyIcons/police.svg';
+import PowerIcon from '../../../assets/EmergencyIcons/power.svg';
+import DisasterIcon from '../../../assets/EmergencyIcons/disaster.svg';
 
 const HotlineBody: React.FC = () => {
   const [modalVisible, setModalVisible] = useState(false);

@@ -16,7 +16,7 @@ const TabsLayout = () => {
 
   const handleTabPress = (tab: string) => {
     setActiveTab(tab);
-    setIsEditingProfile(false); // Reset edit state when switching tabs
+    setIsEditingProfile(false); 
   };
 
   const handleEditInformation = () => {
