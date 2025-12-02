@@ -9,7 +9,14 @@ const WelcomeScreen = ({ navigation }: any) => {
       <LinearGradient colors={['#FF9427', '#F57C00']} style={styles.container}>
         <View style={styles.content}>
           {/* Logo */}
-          <Text style={styles.logo}>🏠 ResqLine</Text>
+          <View style={styles.logoContainer}>
+            <Image
+              source={require('../../assets/White-Logo.png')}
+              style={styles.logoImage}
+              resizeMode="contain"
+            />
+            <Text style={styles.logo}>ResqLine</Text>
+          </View>
 
           {/* Illustration Placeholder */}
           <View style={styles.illustrationContainer}>
@@ -18,15 +25,16 @@ const WelcomeScreen = ({ navigation }: any) => {
               style={styles.illustration}
               resizeMode="contain"
             />
-          </View>
 
-          {/* White Section */}
-          <View style={styles.whiteSection}>
             {/* Tagline */}
             <Text style={styles.tagline}>
               Stay Alert. Stay Connected. Stay Safe.
             </Text>
+          </View>
 
+          {/* White Section */}
+          <View style={styles.whiteSection}>
+            
             {/* Sign Up Button */}
             <TouchableOpacity
               style={styles.signUpButton}
@@ -69,17 +77,28 @@ const styles = StyleSheet.create({
     paddingTop: 40,
     paddingBottom: 0,
   },
+  logoContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 20,
+    gap: 10,
+  },
+  logoImage: {
+    width: 34,
+    height: 34,
+  },
   logo: {
-    fontSize: 28,
+    fontSize: 30,
     fontWeight: 'bold',
     color: '#fff',
-    marginTop: 20,
   },
   illustrationContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     width: '100%',
+    gap: 20,
+    marginTop: 40,
   },
   illustration: {
     width: 250,
@@ -88,25 +107,27 @@ const styles = StyleSheet.create({
   whiteSection: {
     width: '100%',
     backgroundColor: '#fff',
-    borderTopLeftRadius: 10,
-    borderTopRightRadius: 10,
+    borderTopLeftRadius: 25,
+    borderTopRightRadius: 25,
     paddingHorizontal: 20,
-    paddingVertical: 30,
+    paddingVertical: 50,
     alignItems: 'center',
-    gap: 12,
+    gap: 25,
   },
   tagline: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#333',
+    fontSize: 24,
+    fontWeight: 'regular',
+    color: '#ffffffff',
     textAlign: 'center',
     marginBottom: 20,
-    lineHeight: 24,
+    lineHeight: 30,
+    paddingHorizontal: 20,
+    paddingVertical: 30,
   },
   signUpButton: {
     width: '100%',
     backgroundColor: '#FF9427',
-    borderRadius: 8,
+    borderRadius: 10,
     paddingVertical: 12,
     alignItems: 'center',
     justifyContent: 'center',
@@ -121,7 +142,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     borderWidth: 2,
     borderColor: '#FF9427',
-    borderRadius: 8,
+    borderRadius: 10,
     paddingVertical: 12,
     alignItems: 'center',
     justifyContent: 'center',
