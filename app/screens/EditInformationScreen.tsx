@@ -16,6 +16,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useUserProfile } from '../contexts/UserProfileContext';
 import { useSlideIn } from '../transitions/slideIn';
 import ProfileEdit from '../../assets/ProfileEdit.svg';
+import ChangeNumberScreen from './ChangeNumberScreen';
 
 interface EditInformationScreenProps {
   onBack: () => void;
@@ -29,6 +30,7 @@ const EditInformationScreen: React.FC<EditInformationScreenProps> = ({ onBack })
   const [username, setUsername] = useState(profile.username);
   const [phoneNumber, setPhoneNumber] = useState(profile.phoneNumber);
   const [isAnimatingOut, setIsAnimatingOut] = useState(false);
+  const [showChangeNumber, setShowChangeNumber] = useState(false);
   
  
   const slideAnimation = useSlideIn({ 
@@ -42,12 +44,19 @@ const EditInformationScreen: React.FC<EditInformationScreenProps> = ({ onBack })
     slideAnimation.slideIn();
   }, []);
 
+  const handlePhoneNumberPress = () => {
+    setShowChangeNumber(true);
+  };
+
+  const handleBackFromChangeNumber = () => {
+    setShowChangeNumber(false);
+  };
+
   const handleSave = () => {
     updateProfile({
       firstName: firstName.trim(),
       lastName: lastName.trim(),
       username: username.trim(),
-      phoneNumber: phoneNumber.trim(),
     });
     handleBack(); 
   };
@@ -144,14 +153,14 @@ const EditInformationScreen: React.FC<EditInformationScreenProps> = ({ onBack })
               {/* Phone Number */}
               <View style={styles.fullWidthInputContainer}>
                 <Text style={styles.inputLabel}>Phone number</Text>
-                <TextInput
-                  style={styles.fullWidthInput}
-                  placeholder="Phone number"
-                  value={phoneNumber}
-                  onChangeText={setPhoneNumber}
-                  placeholderTextColor="#999"
-                  keyboardType="phone-pad"
-                />
+                <TouchableOpacity 
+                  style={styles.phoneNumberContainer} 
+                  onPress={handlePhoneNumberPress}
+                  activeOpacity={0.7}
+                >
+                  <Text style={styles.phoneNumberText}>{profile.phoneNumber || 'Add phone number'}</Text>
+                  <Ionicons name="chevron-forward" size={16} color="#999" />
+                </TouchableOpacity>
               </View>
 
               {/* Save Button */}
@@ -162,6 +171,13 @@ const EditInformationScreen: React.FC<EditInformationScreenProps> = ({ onBack })
           </ScrollView>
           </KeyboardAvoidingView>
         </Animated.View>
+        
+        {/* Overlay ChangeNumberScreen */}
+        {showChangeNumber && (
+          <View style={styles.overlay}>
+            <ChangeNumberScreen onBack={handleBackFromChangeNumber} />
+          </View>
+        )}
       </SafeAreaView>
     </SafeAreaProvider>
   );
@@ -266,6 +282,32 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  phoneNumberContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderWidth: 1,
+    borderColor: '#000000ff',
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    backgroundColor: '#fff',
+    minHeight: 48,
+  },
+  phoneNumberText: {
+    fontSize: 16,
+    color: '#000',
+    flex: 1,
+  },
+  overlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: '#fff',
+    zIndex: 1000,
   },
 });
 

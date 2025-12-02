@@ -18,9 +18,10 @@ import Profile from '../../../assets/Profile.svg';
 interface ProfileBodyProps {
   onTabPress?: (tab: string) => void;
   onEditInformation?: () => void;
+  onPhoneNumberPress?: () => void;
 }
 
-const ProfileBody: React.FC<ProfileBodyProps> = ({ onTabPress, onEditInformation }) => {
+const ProfileBody: React.FC<ProfileBodyProps> = ({ onTabPress, onEditInformation, onPhoneNumberPress }) => {
   const { profile, getFullName } = useUserProfile();
   const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
@@ -47,7 +48,9 @@ const ProfileBody: React.FC<ProfileBodyProps> = ({ onTabPress, onEditInformation
   const handleEditInformation = () => {
     onEditInformation?.();
   };
-  const handlePhoneNumber = () => {};
+  const handlePhoneNumber = () => {
+    onPhoneNumberPress?.();
+  };
   const handleNotifications = () => {};
   const handleLocationAccess = () => {};
   const handleHelpSupport = () => {};
@@ -57,6 +60,29 @@ const ProfileBody: React.FC<ProfileBodyProps> = ({ onTabPress, onEditInformation
   const handleTermsOfService = () => {};
   const handleLogOut = () => {};
   const handleDeleteAccount = () => {};
+
+  const formatPhoneNumber = (phoneNumber: string) => {
+    
+    const digits = phoneNumber.replace(/\D/g, '');
+    
+    let cleanNumber = digits;
+    if (digits.startsWith('63')) {
+      cleanNumber = digits.slice(2); 
+    } else if (digits.startsWith('0')) {
+      cleanNumber = digits.slice(1); 
+    }
+    
+    // Format as +63 xxx xxx xxxx
+    if (cleanNumber.length >= 10) {
+      const part1 = cleanNumber.slice(0, 3);
+      const part2 = cleanNumber.slice(3, 6);
+      const part3 = cleanNumber.slice(6, 10);
+      return `+63 ${part1} ${part2} ${part3}`;
+    }
+    
+    // Fallback for incomplete numbers
+    return `+63 ${cleanNumber}`;
+  };
 
   const getUserLocationText = () => {
     if (isLoadingLocation) {
@@ -109,11 +135,11 @@ const ProfileBody: React.FC<ProfileBodyProps> = ({ onTabPress, onEditInformation
             
             <View style={styles.userInfoContainer}>
               <Text style={styles.userName}>{getFullName()}</Text>
-              <Text style={styles.userPhone}>{profile.phoneNumber}</Text>
+              <Text style={styles.userPhone}>{formatPhoneNumber(profile.phoneNumber || '')}</Text>
               <Text style={styles.userLocation}>{getUserLocationText()}</Text>
             </View>
             
-            <TouchableOpacity style={styles.chevronContainer}>
+            <TouchableOpacity style={styles.chevronContainer} onPress={onEditInformation}>
               <Ionicons name="chevron-forward" size={20} color="#FFF" />
             </TouchableOpacity>
           </View>
