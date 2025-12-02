@@ -7,9 +7,10 @@ import FooterNav from '../components/FooterNav';
 
 interface HomeScreenProps {
   onTabPress?: (tab: string) => void;
+  onRecentReports?: () => void;
 }
 
-const HomeScreen = ({ onTabPress }: HomeScreenProps) => {
+const HomeScreen = ({ onTabPress, onRecentReports }: HomeScreenProps) => {
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.container}>
@@ -17,7 +18,7 @@ const HomeScreen = ({ onTabPress }: HomeScreenProps) => {
         <View style={styles.wrapper}>
           <Header title="Home" />
           <View style={styles.body}>
-            <HomeBody onTabPress={onTabPress} />
+            <HomeBody onTabPress={onTabPress} onRecentReports={onRecentReports} />
           </View>
           <FooterNav activeTab="home" onTabPress={onTabPress} />
         </View>

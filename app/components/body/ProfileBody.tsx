@@ -19,9 +19,10 @@ interface ProfileBodyProps {
   onTabPress?: (tab: string) => void;
   onEditInformation?: () => void;
   onPhoneNumberPress?: () => void;
+  onRecentReports?: () => void;
 }
 
-const ProfileBody: React.FC<ProfileBodyProps> = ({ onTabPress, onEditInformation, onPhoneNumberPress }) => {
+const ProfileBody: React.FC<ProfileBodyProps> = ({ onTabPress, onEditInformation, onPhoneNumberPress, onRecentReports }) => {
   const { profile, getFullName } = useUserProfile();
   const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
@@ -44,15 +45,15 @@ const ProfileBody: React.FC<ProfileBodyProps> = ({ onTabPress, onEditInformation
     }, [])
   );
 
-  const handleRecentReports = () => {};
+  const handleRecentReports = () => {
+    onRecentReports?.();
+  };
   const handleEditInformation = () => {
     onEditInformation?.();
   };
   const handlePhoneNumber = () => {
     onPhoneNumberPress?.();
   };
-  const handleNotifications = () => {};
-  const handleLocationAccess = () => {};
   const handleHelpSupport = () => {};
   const handleReportProblem = () => {};
   const handleAboutResqLine = () => {};
@@ -157,13 +158,6 @@ const ProfileBody: React.FC<ProfileBodyProps> = ({ onTabPress, onEditInformation
         <Text style={styles.sectionTitle}>Account & Security</Text>
         {renderSectionItem('Edit Information', 'person-outline', handleEditInformation)}
         {renderSectionItem('Phone Number', 'call-outline', handlePhoneNumber, false)}
-      </View>
-
-      {/* Settings Section */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Settings</Text>
-        {renderSectionItem('Notifications', 'notifications-outline', handleNotifications)}
-        {renderSectionItem('Location Access', 'location-outline', handleLocationAccess, false)}
       </View>
 
       {/* Contact Us Section */}

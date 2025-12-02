@@ -13,9 +13,10 @@ interface ProfileScreenProps {
   onTabPress: (tab: string) => void;
   onEditInformation?: () => void;
   onPhoneNumberPress?: () => void;
+  onRecentReports?: () => void;
 }
 
-const ProfileScreen: React.FC<ProfileScreenProps> = ({ onTabPress, onEditInformation, onPhoneNumberPress }) => {
+const ProfileScreen: React.FC<ProfileScreenProps> = ({ onTabPress, onEditInformation, onPhoneNumberPress, onRecentReports }) => {
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.container}>
@@ -26,6 +27,7 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ onTabPress, onEditInforma
               onTabPress={onTabPress} 
               onEditInformation={onEditInformation}
               onPhoneNumberPress={onPhoneNumberPress}
+              onRecentReports={onRecentReports}
             />
           </View>
           

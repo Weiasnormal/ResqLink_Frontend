@@ -15,15 +15,17 @@ import { MaterialIcons } from '@expo/vector-icons';
 import HotlineModal from '../card_modal/HotlineModal';
 import ReportCard, { Report } from '../card_modal/ReportCard';
 import { EMERGENCY_DEPARTMENTS, DepartmentCategory } from '../../data/emergencyDepartments';
+import { getLimitedRecentReports } from '../../data/recentReportsData';
 import HospitalIcon from '../../../assets/EmergencyIcons/hospital.svg';
 import FireIcon from '../../../assets/EmergencyIcons/fire.svg';
 import PoliceIcon from '../../../assets/EmergencyIcons/police.svg';
 
 interface HomeBodyProps {
   onTabPress?: (tab: string) => void;
+  onRecentReports?: () => void;
 }
 
-const HomeBody: React.FC<HomeBodyProps> = ({ onTabPress }) => {
+const HomeBody: React.FC<HomeBodyProps> = ({ onTabPress, onRecentReports }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<DepartmentCategory | null>(null);
   const [scaleAnim] = useState(new Animated.Value(1));
@@ -56,7 +58,7 @@ const HomeBody: React.FC<HomeBodyProps> = ({ onTabPress }) => {
       title: 'History',
       iconSource: require('../../../assets/Home/history.png'),
       backgroundColor: '#FFEDE6',
-      onPress: () => Alert.alert('Coming Soon', 'History feature is under development.')
+      onPress: () => onRecentReports?.()
     }
   ];
 
@@ -153,35 +155,8 @@ const HomeBody: React.FC<HomeBodyProps> = ({ onTabPress }) => {
     }
   };
 
-  const sampleRecentReports: Report[] = [
-    {
-      id: 1,
-      title: 'Restaurant Fire near the Sampaloc Market',
-      status: 'Submitted',
-      type: 'Fire',
-      typeIcon: 'flame-outline',
-      date: 'Nov 30, 2025',
-      location: 'San Rafael'
-    },
-    {
-      id: 2,
-      title: 'Traffic Accident on Main Street',
-      status: 'Under Review',
-      type: 'Accident',
-      typeIcon: 'car-outline',
-      date: 'Nov 29, 2025',
-      location: 'San Pablo City'
-    },
-    {
-      id: 3,
-      title: 'Medical Emergency at Plaza',
-      status: 'Resolved',
-      type: 'Medical',
-      typeIcon: 'medical-outline',
-      date: 'Nov 28, 2025',
-      location: 'City Center'
-    }
-  ];
+  // Get limited recent reports (max 5) for HomeBody display
+  const recentReports = getLimitedRecentReports(5);
 
   const handleReportPress = (report: Report) => {
     Alert.alert('Report Details', `Viewing details for: ${report.title}`);
@@ -252,7 +227,7 @@ const HomeBody: React.FC<HomeBodyProps> = ({ onTabPress }) => {
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Your Recent Reports</Text>
           <TouchableOpacity 
-            onPress={() => Alert.alert('Coming Soon', 'See all reports feature is under development.')}
+            onPress={() => onRecentReports?.()}
             activeOpacity={0.7}
           >
             <Text style={styles.seeAllText}>See All</Text>
@@ -267,7 +242,7 @@ const HomeBody: React.FC<HomeBodyProps> = ({ onTabPress }) => {
           style={styles.reportsScrollView}
           contentContainerStyle={styles.reportsScrollContent}
         >
-          {sampleRecentReports.map((report) => (
+          {recentReports.map((report) => (
             <ReportCard 
               key={report.id} 
               report={report} 

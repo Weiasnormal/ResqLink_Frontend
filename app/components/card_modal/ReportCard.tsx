@@ -23,9 +23,10 @@ export interface Report {
 interface ReportCardProps {
   report: Report;
   onPress?: (report: Report) => void;
+  fullWidth?: boolean;
 }
 
-const ReportCard: React.FC<ReportCardProps> = ({ report, onPress }) => {
+const ReportCard: React.FC<ReportCardProps> = ({ report, onPress, fullWidth = false }) => {
   // Helper function to truncate title for 2 rows
   const truncateTitle = (title: string, maxChars: number = 35) => {
     if (title.length <= maxChars) return title;
@@ -47,7 +48,7 @@ const ReportCard: React.FC<ReportCardProps> = ({ report, onPress }) => {
   };
 
   return (
-    <View style={styles.reportCard}>
+    <View style={[styles.reportCard, fullWidth ? styles.reportCardFullWidth : styles.reportCardFixed]}>
       <View style={styles.reportMainContent}>
         <View style={styles.reportImageContainer}>
           <Image 
@@ -61,13 +62,19 @@ const ReportCard: React.FC<ReportCardProps> = ({ report, onPress }) => {
             <Text style={styles.reportTitle} numberOfLines={2} ellipsizeMode="tail">
               {truncateTitle(report.title, 35)}
             </Text>
-            <View style={[styles.reportStatusContainer, 
-              report.status === 'Resolved' && styles.resolvedStatusContainer,
-              report.status === 'Under Review' && styles.reviewStatusContainer
+            <View style={[
+              styles.reportStatusContainer, 
+              report.status === 'Submitted' && styles.submittedStatusContainer,
+              report.status === 'Under Review' && styles.reviewStatusContainer,
+              report.status === 'Dispatched' && styles.dispatchedStatusContainer,
+              report.status === 'Resolved' && styles.resolvedStatusContainer
             ]}>
-              <Text style={[styles.reportStatus,
-                report.status === 'Resolved' && styles.resolvedStatusText,
-                report.status === 'Under Review' && styles.reviewStatusText
+              <Text style={[
+                styles.reportStatus,
+                report.status === 'Submitted' && styles.submittedStatusText,
+                report.status === 'Under Review' && styles.reviewStatusText,
+                report.status === 'Dispatched' && styles.dispatchedStatusText,
+                report.status === 'Resolved' && styles.resolvedStatusText
               ]}>{truncateStatus(report.status, 15)}</Text>
             </View>
           </View>
@@ -112,6 +119,11 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.05,
     shadowRadius: 4,
     elevation: 2,
+  },
+  reportCardFullWidth: {
+    width: '100%',
+  },
+  reportCardFixed: {
     width: 300,
     marginRight: 16,
   },
@@ -165,17 +177,29 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     textAlign: 'center',
   },
-  resolvedStatusContainer: {
-    backgroundColor: '#E3F2FD',
+  submittedStatusContainer: {
+    backgroundColor: '#f5f5f5',
   },
   reviewStatusContainer: {
+    backgroundColor: '#E3F2FD',
+  },
+  dispatchedStatusContainer: {
     backgroundColor: '#FFF3E0',
   },
-  resolvedStatusText: {
-    color: '#1976D2',
+  resolvedStatusContainer: {
+    backgroundColor: '#E8F5E8',
+  },
+  submittedStatusText: {
+    color: '#666',
   },
   reviewStatusText: {
+    color: '#1976D2',
+  },
+  dispatchedStatusText: {
     color: '#F57C00',
+  },
+  resolvedStatusText: {
+    color: '#2E7D32',
   },
   reportMetaRow: {
     flexDirection: 'row',
