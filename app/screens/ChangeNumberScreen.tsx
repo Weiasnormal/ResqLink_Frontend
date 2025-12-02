@@ -13,8 +13,8 @@ import {
 } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { useUserProfile } from '../contexts/UserProfileContext';
-import { useSlideIn } from '../transitions/slideIn';
+import { useUserProfile } from '../../src/contexts/UserProfileContext';
+import { useSlideIn } from '../../src/transitions/slideIn';
 import VerifyNumberScreen from './VerifyNumberScreen';
 
 interface ChangeNumberScreenProps {
@@ -319,3 +319,4 @@ const styles = StyleSheet.create({
 });
 
 export default ChangeNumberScreen;
+

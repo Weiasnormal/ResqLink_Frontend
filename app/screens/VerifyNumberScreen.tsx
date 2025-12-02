@@ -14,8 +14,8 @@ import {
 } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { useSlideIn } from '../transitions/slideIn';
-import { useUserProfile } from '../contexts/UserProfileContext';
+import { useSlideIn } from '../../src/transitions/slideIn';
+import { useUserProfile } from '../../src/contexts/UserProfileContext';
 
 interface VerifyNumberScreenProps {
   onBack: () => void;
@@ -496,3 +496,4 @@ const styles = StyleSheet.create({
 });
 
 export default VerifyNumberScreen;
+

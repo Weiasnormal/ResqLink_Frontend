@@ -1,9 +1,9 @@
 import React from 'react';
 import { StyleSheet, View, StatusBar } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import Header from '../components/Header';
-import SOSBody from '../components/body/SOSBody';
-import FooterNav from '../components/FooterNav';
+import Header from '../../src/components/Header';
+import SOSBody from '../../src/components/body/SOSBody';
+import FooterNav from '../../src/components/FooterNav';
 
 interface SOSScreenProps {
   onTabPress?: (tab: string) => void;
@@ -40,3 +40,4 @@ const styles = StyleSheet.create({
 });
 
 export default SOSScreen;
+

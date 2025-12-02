@@ -1,9 +1,9 @@
 import React from 'react';
 import { StyleSheet, View, StatusBar } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import Header from '../components/Header';
-import HotlineBody from '../components/body/HotlineBody';
-import FooterNav from '../components/FooterNav';
+import Header from '../../src/components/Header';
+import HotlineBody from '../../src/components/body/HotlineBody';
+import FooterNav from '../../src/components/FooterNav';
 
 interface HotlineScreenProps {
   onTabPress?: (tab: string) => void;
@@ -40,3 +40,4 @@ const styles = StyleSheet.create({
 });
 
 export default HotlineScreen;
+

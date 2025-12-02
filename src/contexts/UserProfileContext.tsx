@@ -68,3 +68,5 @@ export const UserProfileProvider: React.FC<UserProfileProviderProps> = ({ childr
     </UserProfileContext.Provider>
   );
 };
+
+export default UserProfileProvider;
