@@ -57,7 +57,7 @@ const WelcomeScreen: React.FC = () => {
           {/* Continue as Guest Button */}
           <TouchableOpacity
             style={styles.guestButton}
-            onPress={() => (router.push('(tabs)'))}
+            onPress={() => router.push('(tabs)?tab=home')}
           >
             <Text style={styles.guestText}>Continue as Guest</Text>
           </TouchableOpacity>
