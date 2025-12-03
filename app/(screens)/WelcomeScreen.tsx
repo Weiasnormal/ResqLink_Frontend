@@ -3,9 +3,8 @@ import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 
-const WelcomeScreen = ({ navigation }: any) => {
+const WelcomeScreen: React.FC = () => {
   const router = useRouter();
-  const hasNavProp = navigation && typeof navigation.navigate === 'function';
 
   return (
     <LinearGradient colors={['#FF9427', '#F57C00']} style={styles.container}>
@@ -40,11 +39,11 @@ const WelcomeScreen = ({ navigation }: any) => {
           {/* Sign Up Button */}
           <TouchableOpacity
             style={styles.signUpButton}
-            onPress={() =>
-              hasNavProp ? navigation.navigate('SignUp-BasicInfo') : router.push('(screens)/SignUp-BasicInfo')
-            }
+            onPress={() => {
+              router.push('(screens)/SignUp-BasicInfo');
+            }}
           >
-            <Text style={styles.signUpText}>Sign up</Text>
+            <Text style={styles.signUpText}>Sign Up</Text>
           </TouchableOpacity>
 
           {/* Log In Button */}
@@ -58,7 +57,7 @@ const WelcomeScreen = ({ navigation }: any) => {
           {/* Continue as Guest Button */}
           <TouchableOpacity
             style={styles.guestButton}
-            onPress={() => (hasNavProp ? navigation.navigate('home') : router.push('(tabs)'))}
+            onPress={() => (router.push('(tabs)'))}
           >
             <Text style={styles.guestText}>Continue as Guest</Text>
           </TouchableOpacity>

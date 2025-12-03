@@ -7,7 +7,11 @@ import { useUserProfile } from '../../src/contexts/UserProfileContext';
 const AccountCreated: React.FC = () => {
   const router = useRouter();
   const params = useLocalSearchParams();
-  const { firstName, lastName, phoneNumber, username } = params;
+  const firstName = params.firstName as string | undefined;
+  const lastName = params.lastName as string | undefined;
+  const phoneNumber = params.phoneNumber as string | undefined;
+  const username = params.username as string | undefined;
+
   const { updateProfile } = useUserProfile();
 
   return (
@@ -28,7 +32,6 @@ const AccountCreated: React.FC = () => {
 
         <TouchableOpacity
           style={styles.continueButton}
-          // Update context with values from the signup flow, then navigate into (tabs)
           onPress={() => {
             const updates: Partial<any> = {};
             if (firstName) updates.firstName = firstName;

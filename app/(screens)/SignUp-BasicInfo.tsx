@@ -1,134 +1,169 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
   TextInput,
+  StatusBar,
+  Animated,
+  Platform,
+  KeyboardAvoidingView,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { MaterialIcons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
+import { useSlideIn } from '../../src/transitions/slideIn';
+import { useRouter } from 'expo-router';
 
-const SignUpBasicInfo = ({ navigation }: any) => {
+const SignUpBasicInfo: React.FC = () => {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [focusedField, setFocusedField] = useState<string | null>(null);
+  const [isAnimatingOut, setIsAnimatingOut] = useState(false);
+
+  const slideAnimation = useSlideIn({
+    direction: 'right',
+    distance: 300,
+    duration: 300,
+  });
+
+  const router = useRouter();
+
+  useEffect(() => {
+    slideAnimation.slideIn();
+  }, []);
 
   const handleContinue = () => {
     // Validate and proceed
-    if (phoneNumber && firstName && lastName) {
-      navigation.navigate('SignUp-Verification', {
-        phoneNumber: `+63${phoneNumber}`,
-      });
-    }
+    if (!phoneNumber || !firstName || !lastName) return;
+    const formatted = `+63${phoneNumber}`;
+    const path = `(screens)/SignUp-Verification?firstName=${encodeURIComponent(firstName)}&lastName=${encodeURIComponent(lastName)}&phoneNumber=${encodeURIComponent(
+      formatted
+    )}`;
+    router.push(path);
+  };
+
+  const handleBack = () => {
+    if (isAnimatingOut) return;
+    setIsAnimatingOut(true);
+    Animated.timing(slideAnimation.translateX, {
+      toValue: 300,
+      duration: 250,
+      useNativeDriver: true,
+    }).start(() => router.back());
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.content}>
-        {/* Header */}
-        <View style={styles.header}>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <MaterialIcons name="arrow-back" size={24} color="#333" />
-          </TouchableOpacity>
-          <Text style={styles.headerTitle}>Sign Up (Basic Info)</Text>
-          <View style={{ width: 24 }} />
-        </View>
-
-        {/* Title */}
-        <Text style={styles.title}>Create Your ResqLine Account</Text>
-        <Text style={styles.subtitle}>
-          First, let's enter your basic information
-        </Text>
-
-        {/* Phone Number Field */}
-        <View style={styles.phoneContainer}>
-          <View style={styles.countryCodeBox}>
-            <Text style={styles.flag}>🇵🇭</Text>
-            <Text style={styles.countryCode}>+ 63</Text>
-          </View>
-          <View
-            style={[
-              styles.phoneInputWrapper,
-              focusedField === 'phone' && styles.focusedInput,
-            ]}
-          >
-            {focusedField === 'phone' && (
-              <Text style={styles.floatingLabel}>Phone number</Text>
-            )}
-            <TextInput
-              style={styles.phoneInput}
-              placeholder={focusedField !== 'phone' ? 'Phone number' : ''}
-              placeholderTextColor="#999"
-              value={phoneNumber}
-              onChangeText={setPhoneNumber}
-              onFocus={() => setFocusedField('phone')}
-              onBlur={() => !phoneNumber && setFocusedField(null)}
-              keyboardType="phone-pad"
-            />
-          </View>
-        </View>
-
-        {/* First Name and Last Name */}
-        <View style={styles.nameRow}>
-          <View
-            style={[
-              styles.inputWrapper,
-              focusedField === 'firstName' && styles.focusedInput,
-            ]}
-          >
-            {focusedField === 'firstName' && (
-              <Text style={styles.floatingLabel}>First name</Text>
-            )}
-            <TextInput
-              style={styles.input}
-              placeholder={focusedField !== 'firstName' ? 'First name' : ''}
-              placeholderTextColor="#999"
-              value={firstName}
-              onChangeText={setFirstName}
-              onFocus={() => setFocusedField('firstName')}
-              onBlur={() => !firstName && setFocusedField(null)}
-            />
-          </View>
-
-          <View
-            style={[
-              styles.inputWrapper,
-              focusedField === 'lastName' && styles.focusedInput,
-            ]}
-          >
-            {focusedField === 'lastName' && (
-              <Text style={styles.floatingLabel}>Last name</Text>
-            )}
-            <TextInput
-              style={styles.input}
-              placeholder={focusedField !== 'lastName' ? 'Last name' : ''}
-              placeholderTextColor="#999"
-              value={lastName}
-              onChangeText={setLastName}
-              onFocus={() => setFocusedField('lastName')}
-              onBlur={() => !lastName && setFocusedField(null)}
-            />
-          </View>
-        </View>
-
-        {/* Terms and Conditions */}
-        <Text style={styles.termsText}>
-          By entering an account, you agree to the{' '}
-          <Text style={styles.termsLink}>Terms and Conditions</Text> and{' '}
-          <Text style={styles.termsLink}>Privacy Policy</Text>
-        </Text>
-
-        {/* Continue Button */}
-        <TouchableOpacity
-          style={styles.continueButton}
-          onPress={handleContinue}
-          disabled={!phoneNumber || !firstName || !lastName}
+      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
+      <Animated.View style={[styles.keyboardAvoidingView, { transform: [{ translateX: slideAnimation.translateX }] }]}>
+        <KeyboardAvoidingView
+          style={styles.flex}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
-          <Text style={styles.continueButtonText}>Continue</Text>
-        </TouchableOpacity>
-      </View>
+          <View style={styles.header}>
+            <TouchableOpacity style={styles.backButton} onPress={handleBack}>
+              <Ionicons name="chevron-back" size={24} color="#000" />
+            </TouchableOpacity>
+            <Text style={styles.headerTitle}>Sign Up (Basic Info)</Text>
+            <View style={styles.headerSpacer} />
+          </View>
+
+          <View style={styles.content}>
+            <Text style={styles.title}>Create Your ResqLine Account</Text>
+            <Text style={styles.subtitle}>
+              First, let's enter your basic information
+            </Text>
+
+            <View style={styles.phoneContainer}>
+              <View style={styles.countryCodeBox}>
+                <Text style={styles.flag}>🇵🇭</Text>
+                <Text style={styles.countryCode}>+ 63</Text>
+              </View>
+              <View
+                style={[
+                  styles.phoneInputWrapper,
+                  focusedField === 'phone' && styles.focusedInput,
+                ]}
+              >
+                {focusedField === 'phone' && (
+                  <Text style={styles.floatingLabel}>Phone number</Text>
+                )}
+                <TextInput
+                  style={styles.phoneInput}
+                  placeholder={focusedField !== 'phone' ? 'Phone number' : ''}
+                  placeholderTextColor="#999"
+                  value={phoneNumber}
+                  onChangeText={text => setPhoneNumber(text.replace(/\D/g, ''))}
+                  onFocus={() => setFocusedField('phone')}
+                  onBlur={() => !phoneNumber && setFocusedField(null)}
+                  keyboardType="phone-pad"
+                  maxLength={11}
+                />
+              </View>
+            </View>
+
+            <View style={styles.nameRow}>
+              <View
+                style={[
+                  styles.inputWrapper,
+                  focusedField === 'firstName' && styles.focusedInput,
+                ]}
+              >
+                {focusedField === 'firstName' && (
+                  <Text style={styles.floatingLabel}>First name</Text>
+                )}
+                <TextInput
+                  style={styles.input}
+                  placeholder={focusedField !== 'firstName' ? 'First name' : ''}
+                  placeholderTextColor="#999"
+                  value={firstName}
+                  onChangeText={setFirstName}
+                  onFocus={() => setFocusedField('firstName')}
+                  onBlur={() => !firstName && setFocusedField(null)}
+                />
+              </View>
+
+              <View
+                style={[
+                  styles.inputWrapper,
+                  focusedField === 'lastName' && styles.focusedInput,
+                ]}
+              >
+                {focusedField === 'lastName' && (
+                  <Text style={styles.floatingLabel}>Last name</Text>
+                )}
+                <TextInput
+                  style={styles.input}
+                  placeholder={focusedField !== 'lastName' ? 'Last name' : ''}
+                  placeholderTextColor="#999"
+                  value={lastName}
+                  onChangeText={setLastName}
+                  onFocus={() => setFocusedField('lastName')}
+                  onBlur={() => !lastName && setFocusedField(null)}
+                />
+              </View>
+            </View>
+
+            <Text style={styles.termsText}>
+              By entering an account, you agree to the{' '}
+              <Text style={styles.termsLink}>Terms and Conditions</Text> and{' '}
+              <Text style={styles.termsLink}>Privacy Policy</Text>
+            </Text>
+          </View>
+
+          <View style={styles.footer}>
+            <TouchableOpacity
+              style={[styles.continueButton, (!phoneNumber || !firstName || !lastName) ? styles.continueButtonDisabled : null]}
+              onPress={handleContinue}
+              disabled={!phoneNumber || !firstName || !lastName}
+            >
+              <Text style={styles.continueButtonText}>Continue</Text>
+            </TouchableOpacity>
+          </View>
+        </KeyboardAvoidingView>
+      </Animated.View>
     </SafeAreaView>
   );
 };
@@ -138,6 +173,8 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f5f5f5',
   },
+  keyboardAvoidingView: { flex: 1 },
+  flex: { flex: 1 },
   content: {
     flex: 1,
     paddingHorizontal: 20,
@@ -146,18 +183,22 @@ const styles = StyleSheet.create({
   },
   header: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 30,
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    backgroundColor: '#fff',
   },
+  backButton: { padding: 4 },
   headerTitle: {
     fontSize: 14,
     color: '#666',
     fontWeight: '500',
   },
+  headerSpacer: { width: 32 },
   title: {
     fontSize: 28,
-    fontWeight: 'bold',
+    fontWeight: '700',
     color: '#333',
     marginBottom: 10,
   },
@@ -165,6 +206,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#666',
     marginBottom: 30,
+    textAlign: 'center',
   },
   phoneContainer: {
     flexDirection: 'row',
@@ -246,6 +288,7 @@ const styles = StyleSheet.create({
     color: '#FF9427',
     fontWeight: '600',
   },
+  footer: { paddingHorizontal: 20, paddingBottom: 24 },
   continueButton: {
     width: '100%',
     backgroundColor: '#FF9427',
@@ -254,6 +297,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 30,
+  },
+  continueButtonDisabled: {
+    backgroundColor: '#E0E0E0',
   },
   continueButtonText: {
     color: '#fff',

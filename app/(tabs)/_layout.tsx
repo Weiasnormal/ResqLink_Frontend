@@ -10,13 +10,22 @@ import ProfileScreen from '../(screens)/ProfileScreen';
 import EditInformationScreen from '../(screens)/EditInformationScreen';
 import ChangeNumberScreen from '../(screens)/ChangeNumberScreen';
 import RecentReportScreen from '../(screens)/RecentReportScreen';
-import SignUpBasicInfo from '../(screens)/SignUp-BasicInfo';
-import SignUpVerification from '../(screens)/SignUp-Verification';
+// Sign-up screens are routed separately; do not include them here
 import { useLocalSearchParams } from 'expo-router';
+
+// Cast imported screen modules to a React component type that accepts any props
+const Welcome = WelcomeScreen as React.ComponentType<any>;
+const Report = ReportScreen as React.ComponentType<any>;
+const SOS = SOSScreen as React.ComponentType<any>;
+const Hotline = HotlineScreen as React.ComponentType<any>;
+const Home = HomeScreen as React.ComponentType<any>;
+const Profile = ProfileScreen as React.ComponentType<any>;
+const EditInformation = EditInformationScreen as React.ComponentType<any>;
+const ChangeNumber = ChangeNumberScreen as React.ComponentType<any>;
+const RecentReport = RecentReportScreen as React.ComponentType<any>;
 
 const TabsLayout = () => {
   const { tab } = useLocalSearchParams();
-  // Preserve existing default 'welcome' unless ?tab= is provided
   const initialTab = Array.isArray(tab) ? tab[0] ?? 'welcome' : tab ?? 'welcome';
   const [activeTab, setActiveTab] = useState<string>(initialTab);
   const [isEditingProfile, setIsEditingProfile] = useState(false);
@@ -54,37 +63,32 @@ const TabsLayout = () => {
   };
 
   const renderScreen = () => {
-
     if (isEditingProfile) {
-      return <EditInformationScreen onBack={handleBackFromEdit} />;
+      return <EditInformation onBack={handleBackFromEdit} />;
     }
-    
+
     if (isChangingNumberFromProfile) {
-      return <ChangeNumberScreen onBack={handleBackFromChangeNumberProfile} />;
+      return <ChangeNumber onBack={handleBackFromChangeNumberProfile} />;
     }
 
     if (isViewingRecentReports) {
-      return <RecentReportScreen onBack={handleBackFromRecentReports} />;
+      return <RecentReport onBack={handleBackFromRecentReports} />;
     }
 
     switch (activeTab) {
       case 'welcome':
-        return <WelcomeScreen navigation={{ navigate: handleTabPress }} />;
-      case 'SignUp-BasicInfo':
-        return <SignUpBasicInfo navigation={{ navigate: handleTabPress }} />;
-      case 'SignUp-Verification':
-        return <SignUpVerification navigation={{ navigate: handleTabPress }} />;
+        return <Welcome onTabPress={handleTabPress} />;
       case 'sos':
-        return <SOSScreen onTabPress={handleTabPress} />;
+        return <SOS onTabPress={handleTabPress} />;
       case 'hotline':
-        return <HotlineScreen onTabPress={handleTabPress} />;
+        return <Hotline onTabPress={handleTabPress} />;
       case 'report':
-        return <ReportScreen onTabPress={handleTabPress} />;
+        return <Report onTabPress={handleTabPress} />;
       case 'profile':
-        return <ProfileScreen onTabPress={handleTabPress} onEditInformation={handleEditInformation} onPhoneNumberPress={handlePhoneNumberPressFromProfile} onRecentReports={handleRecentReports} />;
+        return <Profile onTabPress={handleTabPress} onEditInformation={handleEditInformation} onPhoneNumberPress={handlePhoneNumberPressFromProfile} onRecentReports={handleRecentReports} />;
       case 'home':
       default:
-        return <HomeScreen onTabPress={handleTabPress} onRecentReports={handleRecentReports} />;
+        return <Home onTabPress={handleTabPress} onRecentReports={handleRecentReports} />;
     }
   };
 

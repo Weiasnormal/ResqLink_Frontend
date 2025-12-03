@@ -15,21 +15,19 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useSlideIn } from '../../src/transitions/slideIn';
 import { useUserProfile } from '../../src/contexts/UserProfileContext';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 
 interface Props {
-  navigation?: any;
-  route?: {
-    params?: {
-      phoneNumber?: string;
-    };
-  };
   onBack?: () => void;
   onSuccess?: () => void;
 }
 
-const SignUpVerification: React.FC<Props> = ({ navigation, route, onBack, onSuccess }) => {
-  const phoneNumber = route?.params?.phoneNumber ?? '';
+const SignUpVerification: React.FC<Props> = ({ onBack, onSuccess }) => {
+  const params = useLocalSearchParams();
+  const phoneNumber = (params.phoneNumber as string) ?? '';
+  const firstName = (params.firstName as string) ?? '';
+  const lastName = (params.lastName as string) ?? '';
+
   const { updateProfile } = useUserProfile();
   const router = useRouter();
 
@@ -38,6 +36,7 @@ const SignUpVerification: React.FC<Props> = ({ navigation, route, onBack, onSucc
   const [isTimerActive, setIsTimerActive] = useState(true);
   const [attempts, setAttempts] = useState(0);
   const [isLocked, setIsLocked] = useState(false);
+  const [isAnimatingOut, setIsAnimatingOut] = useState(false);
 
   const inputRefs = useRef<Array<TextInput | null>>([]);
   const slideAnimation = useSlideIn({ direction: 'right', distance: 300, duration: 280 });
@@ -122,10 +121,12 @@ const SignUpVerification: React.FC<Props> = ({ navigation, route, onBack, onSucc
         return;
       }
 
-      // success path: update minimal profile and navigate to Account Created screen (no confirmation overlay)
-      updateProfile({ phoneNumber });
+      // success path: navigate to Account Created and pass along the collected info
       if (onSuccess) onSuccess();
-      else router.push('(screens)/SignUp-AccountCreated');
+      else {
+        const path = `(screens)/SignUp-AccountCreated?firstName=${encodeURIComponent(firstName)}&lastName=${encodeURIComponent(lastName)}&phoneNumber=${encodeURIComponent(phoneNumber)}`;
+        router.push(path);
+      }
     } catch (err) {
       Alert.alert('Error', 'Verification failed. Try again.');
     }
@@ -145,8 +146,17 @@ const SignUpVerification: React.FC<Props> = ({ navigation, route, onBack, onSucc
   };
 
   const handleBack = () => {
-    if (onBack) onBack();
-    else router.push('(screens)/WelcomeScreen');
+    if (onBack) {
+      onBack();
+      return;
+    }
+    if (isAnimatingOut) return;
+    setIsAnimatingOut(true);
+    Animated.timing(slideAnimation.translateX, {
+      toValue: 300,
+      duration: 250,
+      useNativeDriver: true,
+    }).start(() => router.back());
   };
 
   const isDisabled = code.length !== 4 || isLocked;
