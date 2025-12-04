@@ -283,7 +283,7 @@ const styles = StyleSheet.create({
   },
   userName: {
     fontSize: 20,
-    fontFamily: 'OpenSans_400Regular',
+    fontFamily: 'OpenSans_700Bold',
     color: '#FFF',
     marginBottom: 4,
   },
@@ -316,7 +316,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 22,
-    fontFamily: 'OpenSans_600SemiBold',
+    fontFamily: 'OpenSans_700Bold',
     color: '#333',
     marginBottom: 15,
   },

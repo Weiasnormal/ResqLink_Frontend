@@ -16,6 +16,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useUserProfile } from '../../src/contexts/UserProfileContext';
 import { useSlideIn } from '../../src/transitions/slideIn';
 import VerifyNumberScreen from './VerifyNumberScreen';
+import InlineTextField from '../../src/components/inputs/InlineTextField';
 
 interface ChangeNumberScreenProps {
   onBack: () => void;
@@ -41,8 +42,8 @@ const ChangeNumberScreen: React.FC<ChangeNumberScreenProps> = ({ onBack }) => {
 
   const validatePhoneNumber = (number: string) => {
     const cleanNumber = number.replace(/\D/g, '');
-    if (cleanNumber.length < 10 || cleanNumber.length > 11) {
-      return 'Phone number must be 10-11 digits';
+    if (cleanNumber.length < 10 || cleanNumber.length > 10) {
+      return 'Phone number must be 10 digits';
     }
     return '';
   };
@@ -133,17 +134,19 @@ const ChangeNumberScreen: React.FC<ChangeNumberScreenProps> = ({ onBack }) => {
 
                   {/* Phone Number Input */}
                   <View style={styles.phoneInputWrapper}>
-                    <TextInput
-                      style={[
-                        styles.phoneInput,
-                        validationError ? styles.phoneInputError : {}
-                      ]}
-                      placeholder="New phone number"
+                    <InlineTextField
+                      label="New phone number"
                       value={phoneNumber}
                       onChangeText={handlePhoneNumberChange}
-                      placeholderTextColor="#999"
+                      containerStyle={{}}
                       keyboardType="numeric"
-                      maxLength={11}
+                      maxLength={10}
+                      focusColor="#FF9427"
+                      baseLabelColor="#999"
+                      onBlur={() => {
+                        const err = validatePhoneNumber(phoneNumber);
+                        setValidationError(err);
+                      }}     
                     />
                   </View>
                 </View>
@@ -213,8 +216,8 @@ const styles = StyleSheet.create({
     padding: 4,
   },
   headerTitle: {
-    fontSize: 18,
-    fontFamily: 'OpenSans_600SemiBold',
+    fontSize: 16,
+    fontFamily: 'OpenSans_700Bold',
     color: '#000',
   },
   headerSpacer: {
@@ -233,8 +236,8 @@ const styles = StyleSheet.create({
     paddingTop: 20,
   },
   mainTitle: {
-    fontSize: 32,
-    fontFamily: 'OpenSans_600SemiBold',
+    fontSize: 30,
+    fontFamily: 'OpenSans_700Bold',
     color: '#000',
     marginBottom: 20,
     lineHeight: 36,
@@ -276,14 +279,14 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     fontSize: 16,
     backgroundColor: '#fff',
-    color: '#000',
+    color: '#191716',
   },
   phoneInputError: {
     borderColor: '#FF4444',
     backgroundColor: '#FFF8F8',
   },
   errorText: {
-    fontSize: 14,
+    fontSize: 12,
     color: '#FF4444',
     marginTop: 8,
     marginLeft: 4,

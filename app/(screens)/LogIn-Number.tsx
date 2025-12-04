@@ -16,6 +16,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useSlideIn } from '../../src/transitions/slideIn';
 import LogInVerification from './LogIn-Verification';
 import { useRouter } from 'expo-router';
+import InlineTextField from '../../src/components/inputs/InlineTextField';
 
 const LogInNumber: React.FC = () => {
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -37,8 +38,8 @@ const LogInNumber: React.FC = () => {
 
   const validatePhoneNumber = (number: string) => {
     const cleanNumber = number.replace(/\D/g, '');
-    if (cleanNumber.length < 10 || cleanNumber.length > 11) {
-      return 'Phone number must be 10-11 digits';
+    if (cleanNumber.length < 10 || cleanNumber.length > 10) {
+      return 'Phone number must be 10 digits';
     }
     return '';
   };
@@ -93,33 +94,38 @@ const LogInNumber: React.FC = () => {
               <TouchableOpacity style={styles.backButton} onPress={handleBack}>
                 <Ionicons name="chevron-back" size={24} color="#000" />
               </TouchableOpacity>
-              <Text style={styles.headerTitle}>Welcome Back to ResqLine!</Text>
               <View style={styles.headerSpacer} />
             </View>
 
-            <View style={styles.headerDivider} />
-
             <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
               <View style={styles.contentContainer}>
+                {/* big left-aligned title */}
+                <Text style={styles.title}>Welcome Back to ResqLine!</Text>
+
                 <Text style={styles.subtitle}>
                   Quickly access your account to report emergencies and stay safe.
                 </Text>
 
                 <View style={styles.phoneInputContainer}>
-                  <View style={styles.countrySelector}>
+                  <View style={styles.countryCodeBox}>
                     <Text style={styles.flagEmoji}>🇵🇭</Text>
                     <Text style={styles.countryCode}>+63</Text>
                   </View>
 
                   <View style={styles.phoneInputWrapper}>
-                    <TextInput
-                      style={[styles.phoneInput, validationError ? styles.phoneInputError : {}]}
-                      placeholder="Phone number"
+                    <InlineTextField
+                      label="Phone number"
                       value={phoneNumber}
                       onChangeText={handlePhoneNumberChange}
-                      placeholderTextColor="#999"
+                      containerStyle={{}}
                       keyboardType="numeric"
-                      maxLength={11}
+                      maxLength={10}
+                      focusColor="#FF9427"
+                      baseLabelColor="#999"
+                      onBlur={() => {
+                        const err = validatePhoneNumber(phoneNumber);
+                        setValidationError(err);
+                      }}
                     />
                   </View>
                 </View>
@@ -127,7 +133,9 @@ const LogInNumber: React.FC = () => {
                 {validationError ? <Text style={styles.errorText}>{validationError}</Text> : null}
 
                 <Text style={styles.termsText}>
-                  By entering an account, you agree to the Terms and Conditions and Privacy Policy
+                  By entering an account, you agree to the{' '}
+                  <Text style={styles.termsLink}>Terms and Conditions</Text> and{' '}
+                  <Text style={styles.termsLink}>Privacy Policy</Text>
                 </Text>
               </View>
             </ScrollView>
@@ -169,30 +177,35 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
     paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingTop: 12,
+    paddingBottom: 6,
     backgroundColor: '#fff',
   },
   backButton: { padding: 4 },
-  headerTitle: { fontSize: 18, fontFamily: 'OpenSans_600SemiBold', color: '#000' },
   headerSpacer: { width: 32 },
-  headerDivider: { height: 1, backgroundColor: '#E5E5E5' },
+
   scrollView: { flex: 1 },
-  contentContainer: { flex: 1, paddingHorizontal: 16, paddingTop: 40 },
-  subtitle: { fontSize: 16, color: '#666', textAlign: 'center', marginBottom: 24, lineHeight: 22 },
+  contentContainer: { flex: 1, paddingHorizontal: 20, paddingTop: 32, paddingBottom: 20 },
+  title: {
+    fontSize: 30,
+    lineHeight: 40,
+    fontFamily: 'OpenSans_700Bold',
+    color: '#000',
+    textAlign: 'left',
+    marginBottom: 6,
+  },
+  subtitle: { fontSize: 16, color: '#191919', textAlign: 'left', marginBottom: 20, lineHeight: 22 },
   phoneInputContainer: { flexDirection: 'row', gap: 12, marginBottom: 8 },
-  countrySelector: {
+  countryCodeBox: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#000000ff',
-    borderRadius: 12,
+    backgroundColor: '#e8f5ff',
+    borderRadius: 10,
     paddingHorizontal: 12,
-    paddingVertical: 12,
-    backgroundColor: '#fff',
-    minWidth: 80,
-    justifyContent: 'center',
+    paddingVertical: 14,
+    borderWidth: 1,
+    borderColor: '#cce5ff',
   },
   flagEmoji: { fontSize: 16, marginRight: 6 },
   countryCode: { fontSize: 16, color: '#000', fontFamily: 'OpenSans_400Regular',},
@@ -210,15 +223,20 @@ const styles = StyleSheet.create({
   phoneInputError: { borderColor: '#FF4444', backgroundColor: '#FFF8F8' },
   errorText: { fontSize: 14, color: '#FF4444', marginTop: 8, marginLeft: 4 },
   termsText: { marginTop: 24, fontSize: 12, color: '#999', textAlign: 'center' },
-  bottomContainer: { paddingHorizontal: 16, paddingBottom: 60, backgroundColor: '#fff' },
+  bottomContainer: { paddingHorizontal: 16, paddingBottom: 36, backgroundColor: '#fff' },
   continueButton: {
     backgroundColor: '#F57C00',
-    borderRadius: 12,
-    paddingVertical: 16,
+    borderRadius: 10,
+    paddingVertical: 14,
     alignItems: 'center',
   },
+
+  termsLink: {
+    color: '#FF9427',
+    fontFamily: 'OpenSans_600SemiBold',
+  },
   continueButtonDisabled: { backgroundColor: '#E0E0E0' },
-  continueText: { color: '#fff', fontSize: 18, fontFamily: 'OpenSans_700Bold',},
+  continueText: { color: '#fff', fontSize: 16, fontFamily: 'OpenSans_700Bold',},
   overlay: {
     position: 'absolute',
     top: 0,

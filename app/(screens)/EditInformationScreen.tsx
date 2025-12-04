@@ -25,10 +25,11 @@ interface EditInformationScreenProps {
 const EditInformationScreen: React.FC<EditInformationScreenProps> = ({ onBack }) => {
   const { profile, updateProfile } = useUserProfile();
   
-  const [firstName, setFirstName] = useState(profile.firstName);
-  const [lastName, setLastName] = useState(profile.lastName);
-  const [username, setUsername] = useState(profile.username);
-  const [phoneNumber, setPhoneNumber] = useState(profile.phoneNumber);
+  // initialize local state with safe fallbacks and keep in sync when profile loads/changes
+  const [firstName, setFirstName] = useState<string>(profile.firstName ?? '');
+  const [lastName, setLastName] = useState<string>(profile.lastName ?? '');
+  const [username, setUsername] = useState<string>(profile.username ?? '');
+  const [phoneNumber, setPhoneNumber] = useState<string>(profile.phoneNumber ?? '');
   const [isAnimatingOut, setIsAnimatingOut] = useState(false);
   const [showChangeNumber, setShowChangeNumber] = useState(false);
   
@@ -44,6 +45,13 @@ const EditInformationScreen: React.FC<EditInformationScreenProps> = ({ onBack })
     slideAnimation.slideIn();
   }, []);
 
+  useEffect(() => {
+    setFirstName(profile.firstName ?? '');
+    setLastName(profile.lastName ?? '');
+    setUsername(profile.username ?? '');
+    setPhoneNumber(profile.phoneNumber ?? '');
+  }, [profile]);
+
   const handlePhoneNumberPress = () => {
     setShowChangeNumber(true);
   };
@@ -52,15 +60,21 @@ const EditInformationScreen: React.FC<EditInformationScreenProps> = ({ onBack })
     setShowChangeNumber(false);
   };
 
-  const handleSave = () => {
-    updateProfile({
-      firstName: firstName.trim(),
-      lastName: lastName.trim(),
-      username: username.trim(),
-    });
-    handleBack(); 
-  };
+  const handleSave = async () => {
+    // guard against undefined and ensure strings are trimmed
+    const fn = (firstName ?? '').trim();
+    const ln = (lastName ?? '').trim();
+    const un = (username ?? '').trim();
 
+    try {
+      await updateProfile({ firstName: fn, lastName: ln, username: un });
+    } catch (err) {
+      console.warn('Failed to update profile:', err);
+    }
+
+    handleBack();
+  };
+  
   const handleBack = () => {
     if (isAnimatingOut) return; // Prevent multiple taps
     
@@ -206,8 +220,8 @@ const styles = StyleSheet.create({
     padding: 4,
   },
   headerTitle: {
-    fontSize: 18,
-    fontFamily: 'OpenSans_600SemiBold',
+    fontSize: 16,
+    fontFamily: 'OpenSans_700Bold',
     color: '#000',
   },
   headerSpacer: {

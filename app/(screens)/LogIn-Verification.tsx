@@ -155,8 +155,6 @@ const LogInVerification: React.FC<Props> = ({ onBack, phoneNumber, onSuccess }) 
               <TouchableOpacity style={styles.backButton} onPress={onBack}>
                 <Ionicons name="chevron-back" size={24} color="#000" />
               </TouchableOpacity>
-              <Text style={styles.headerTitle}>Verify Your Account</Text>
-              <View style={styles.headerSpacer} />
             </View>
 
             <View style={styles.headerDivider} />
@@ -240,13 +238,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   backButton: { padding: 4 },
-  headerTitle: { fontSize: 18, fontFamily: 'OpenSans_600SemiBold', color: '#000' },
-  headerSpacer: { width: 32 },
   headerDivider: { height: 1, backgroundColor: '#E5E5E5' },
   scrollView: { flex: 1 },
   contentContainer: { flex: 1, paddingHorizontal: 16, paddingTop: 40 },
-  mainTitle: { fontSize: 28, fontFamily: 'OpenSans_600SemiBold', color: '#000', marginBottom: 12, textAlign: 'center' },
-  subtitle: { fontSize: 16, color: '#666', textAlign: 'center', lineHeight: 22, marginBottom: 30 },
+  mainTitle: { fontSize: 30, fontFamily: 'OpenSans_700Bold', color: '#191716', marginBottom: 12, textAlign: 'center' },
+  subtitle: { fontSize: 16, color: '#191716', textAlign: 'center', lineHeight: 22, marginBottom: 30 },
   otpContainer: { flexDirection: 'row', justifyContent: 'center', gap: 12, marginBottom: 30 },
   otpInput: {
     width: 50,
@@ -261,10 +257,10 @@ const styles = StyleSheet.create({
   },
   otpInputFilled: { borderColor: '#F57C00', backgroundColor: '#FFF9F0' },
   otpInputLocked: { backgroundColor: '#F5F5F5', color: '#999' },
-  helpText: { fontSize: 14, color: '#666', textAlign: 'center', marginBottom: 8 },
+  helpText: { fontSize: 12, color: '#666', textAlign: 'center' },
   resendButton: { alignItems: 'center', paddingVertical: 12 },
   resendButtonDisabled: { opacity: 0.6 },
-  resendButtonText: { fontSize: 16, color: '#F57C00', fontFamily: 'OpenSans_600SemiBold',},
+  resendButtonText: { fontSize: 12, color: '#F57C00', fontFamily: 'OpenSans_600SemiBold',},
   resendButtonTextDisabled: { color: '#999' },
   warningContainer: {
     flexDirection: 'row',
@@ -280,7 +276,7 @@ const styles = StyleSheet.create({
   bottomContainer: { paddingHorizontal: 16, paddingBottom: 20, backgroundColor: '#fff' },
   verifyButton: { backgroundColor: '#F57C00', borderRadius: 12, paddingVertical: 16, alignItems: 'center' },
   verifyButtonDisabled: { backgroundColor: '#E0E0E0' },
-  verifyButtonText: { color: '#fff', fontSize: 18, fontFamily: 'OpenSans_700Bold',},
+  verifyButtonText: { color: '#fff', fontSize: 16, fontFamily: 'OpenSans_700Bold',},
   verifyButtonTextDisabled: { color: '#999' },
 });
 

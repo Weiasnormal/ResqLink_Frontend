@@ -22,6 +22,21 @@ const SignUpBasicInfo: React.FC = () => {
   const [isAnimatingOut, setIsAnimatingOut] = useState(false);
   const [phoneTouched, setPhoneTouched] = useState(false);
 
+  // validate like ChangeNumberScreen: require exactly 10 digits (local number without country code)
+  const validatePhoneNumber = (number: string) => {
+    const cleanNumber = number.replace(/\D/g, '');
+    if (cleanNumber.length !== 10) return 'Phone number must be 10 digits';
+    return '';
+  };
+
+  // compute current phone error string once
+  const phoneError = validatePhoneNumber(phoneNumber);
+
+  const handlePhoneNumberChange = (text: string) => {
+    const numericText = text.replace(/\D/g, '');
+    setPhoneNumber(numericText);
+  };
+
   const slideAnimation = useSlideIn({
     direction: 'right',
     distance: 300,
@@ -34,7 +49,7 @@ const SignUpBasicInfo: React.FC = () => {
     slideAnimation.slideIn();
   }, []);
 
-  const isPhoneValid = phoneNumber.replace(/\D/g, '').length === 11;
+  const isPhoneValid = validatePhoneNumber(phoneNumber) === '';
 
   const handleContinue = () => {
     setPhoneTouched(true);
@@ -84,16 +99,20 @@ const SignUpBasicInfo: React.FC = () => {
               <InlineTextField
                 label="Phone number"
                 value={phoneNumber}
-                onChangeText={text => setPhoneNumber(text.replace(/\D/g, ''))}
+                onChangeText={handlePhoneNumberChange}
                 containerStyle={styles.phoneInputWrapper}
                 keyboardType="phone-pad"
-                maxLength={11}
+                maxLength={10}
                 focusColor="#FF9427"
                 baseLabelColor="#999"
                 onBlur={() => setPhoneTouched(true)}
-                assistiveText={phoneTouched && !isPhoneValid ? 'Phone number must be 11 digits' : ''}
               />
+              {/* assistive/error text is rendered outside the InlineTextField so it can sit under the country code box */}
             </View>
+
+            {phoneTouched && phoneError ? (
+              <Text style={styles.phoneError}>{phoneError}</Text>
+            ) : null}
 
             <View style={styles.nameRow}>
               <InlineTextField
@@ -205,6 +224,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginBottom: 22,
     marginTop: 20,
+    gap: 12,
   },
   inputWrapper: {
     flex: 1,
@@ -238,6 +258,12 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontFamily: 'OpenSans_600SemiBold',
+  },
+  phoneError: {
+    fontSize: 14,
+    color: '#FF3D00',
+    marginTop: 8,
+    marginLeft: 10,
   },
 });
 
