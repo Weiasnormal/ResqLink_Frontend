@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import HotlineModal from '../card_modal/HotlineModal';
-import { EMERGENCY_DEPARTMENTS, Department, DepartmentCategory } from '../../data/emergencyDepartments';
+import { EMERGENCY_DEPARTMENTS, Department, DepartmentCategory } from '../../_data/emergencyDepartments';
 
 // Import SVG icons as React components
 import HospitalIcon from '../../../assets/EmergencyIcons/hospital.svg';

@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { useSlideIn } from '../transitions/slideIn';
+import { useSlideIn } from '../_transitions/slideIn';
 import LogInVerification from './LogIn-Verification';
 import { useRouter } from 'expo-router';
 import InlineTextField from '../components/inputs/InlineTextField';

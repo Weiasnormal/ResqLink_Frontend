@@ -1,8 +1,8 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Linking, Alert, Clipboard } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Department } from '../../data/emergencyDepartments';
-import { useLocation } from '../../hooks/useLocation';
+import { Department } from '../../_data/emergencyDepartments';
+import { useLocation } from '../../_hooks/useLocation';
 
 interface HotlineCardProps {
   department: Department;

@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import { router } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import { useFadeOut, useCircularFadeTransition } from '../transitions';
+import { useFadeOut, useCircularFadeTransition } from '../_transitions';
 
 // Import SVG logos
 import Logo from '../../assets/Logo.svg';
@@ -49,7 +49,7 @@ const IntroScreen: React.FC = () => {
       setTimeout(() => {
         setStage('fadeOut');
         finalFade.fadeOut(() => {
-          router.replace('/(tabs)');
+          router.replace('/(tabs)?tab=welcome');
         });
       }, 3000); // 1s (stage1) + 1.2s (circular transition) + 0.8s (stage2 display) = 3s total
     };

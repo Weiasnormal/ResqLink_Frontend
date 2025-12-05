@@ -1,6 +1,6 @@
 import React from 'react';
 import { Slot } from 'expo-router';
-import { UserProfileProvider } from './contexts/UserProfileContext';
+import { UserProfileProvider } from './_contexts/UserProfileContext';
 
 export default function RootLayout() {
   return (

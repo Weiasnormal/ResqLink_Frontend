@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, StatusBar } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import { useUserProfile } from '../contexts/UserProfileContext';
+import { useUserProfile } from '../_contexts/UserProfileContext';
 
 const AccountCreated: React.FC = () => {
   const router = useRouter();

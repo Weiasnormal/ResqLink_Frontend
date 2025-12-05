@@ -14,7 +14,7 @@ import RecentReportScreen from '../(screens)/RecentReportScreen';
 import { useLocalSearchParams } from 'expo-router';
 
 import { useFonts, OpenSans_400Regular, OpenSans_600SemiBold, OpenSans_700Bold } from '@expo-google-fonts/open-sans';
-import { UserProfileProvider } from '../contexts/UserProfileContext';
+import { UserProfileProvider } from '../_contexts/UserProfileContext';
 
 // Cast imported screen modules to a React component type that accepts any props
 const Welcome = WelcomeScreen as React.ComponentType<any>;
