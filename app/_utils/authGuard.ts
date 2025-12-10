@@ -1,6 +1,7 @@
 import * as SecureStore from 'expo-secure-store';
 import { router } from 'expo-router';
 import { TOKEN_KEY } from '../_api/config';
+import { notificationManager, DomainEventType } from './notificationManager';
 
 // check if user is authenticated
 export const isAuthenticated = async (): Promise<boolean> => {
@@ -43,6 +44,18 @@ export const requireAuthentication = async () => {
 export const handleLogout = async () => {
   try {
     await SecureStore.deleteItemAsync(TOKEN_KEY);
+    
+    // Show logout notification
+    await notificationManager.handleDomainEvent({
+      eventId: Date.now().toString(),
+      eventType: DomainEventType.UserLoggedOut,
+      aggregateId: '',
+      aggregateType: 'User',
+      timestamp: new Date().toISOString(),
+      data: {},
+      correlationId: '',
+    });
+    
     router.replace('/WelcomeScreen');
   } catch (error) {
     console.error('Error during logout:', error);

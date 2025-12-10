@@ -6,6 +6,7 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import WhiteLogo from '../../assets/White-Logo.svg';
 import WelcomeIllustration from '../../assets/Welcome-Illustration1.svg';
 import { redirectIfAuthenticated } from '../_utils/authGuard';
+import { notificationManager, DomainEventType } from '../_utils/notificationManager';
 
 const WelcomeScreen: React.FC = () => {
   const router = useRouter();
@@ -65,7 +66,20 @@ const WelcomeScreen: React.FC = () => {
 
           <TouchableOpacity
             style={styles.guestButton}
-            onPress={() => router.push({ pathname: '/(tabs)', params: { tab: 'home' } })}
+            onPress={async () => {
+              // Show guest mode notification
+              await notificationManager.handleDomainEvent({
+                eventId: Date.now().toString(),
+                eventType: DomainEventType.GuestModeActivated,
+                aggregateId: '',
+                aggregateType: 'User',
+                timestamp: new Date().toISOString(),
+                data: {},
+                correlationId: '',
+              });
+              
+              router.push({ pathname: '/(tabs)', params: { tab: 'home' } });
+            }}
           >
             <Text style={styles.guestText}>Continue as Guest</Text>
           </TouchableOpacity>

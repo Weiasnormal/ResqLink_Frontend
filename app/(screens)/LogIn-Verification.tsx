@@ -22,6 +22,7 @@ import { useUserProfile } from '../_contexts/UserProfileContext';
 // Import API hooks
 import { useVerifyOtp, useGenerateOtp } from '../_hooks/useApi';
 import { formatApiError } from '../_utils/apiHelpers';
+import { notificationManager, DomainEventType } from '../_utils/notificationManager';
 
 interface Props {
   onBack: () => void;
@@ -123,6 +124,17 @@ const LogInVerification: React.FC<Props> = ({ onBack, phoneNumber, onSuccess }) 
       if (result.success) {
         // Update user profile context
         await updateProfile({ phoneNumber: phoneNumber || '' });
+        
+        // Show login success notification
+        await notificationManager.handleDomainEvent({
+          eventId: Date.now().toString(),
+          eventType: DomainEventType.UserLoggedIn,
+          aggregateId: '',
+          aggregateType: 'User',
+          timestamp: new Date().toISOString(),
+          data: { phoneNumber: phoneNumber || '' },
+          correlationId: '',
+        });
         
         // Navigate directly to home - user is logged in
         router.replace({ pathname: '/(tabs)', params: { tab: 'home' } });

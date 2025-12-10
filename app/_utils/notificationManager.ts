@@ -13,6 +13,10 @@ export enum DomainEventType {
   ReportInProgress = 'ReportInProgressDomainEvent',
   ReportResolved = 'ReportResolvedDomainEvent',
   AccountDeleted = 'AccountDeletedDomainEvent',
+  // Local events (not from backend)
+  UserLoggedIn = 'UserLoggedInEvent',
+  UserLoggedOut = 'UserLoggedOutEvent',
+  GuestModeActivated = 'GuestModeActivatedEvent',
 }
 
 /**
@@ -130,6 +134,27 @@ class NotificationManager {
           this.showInfoNotification(
             'Phone Number Changed',
             'Your phone number has been updated.'
+          );
+          break;
+
+        case DomainEventType.UserLoggedIn:
+          this.showSuccessNotification(
+            'Welcome Back!',
+            'You have successfully logged in.'
+          );
+          break;
+
+        case DomainEventType.UserLoggedOut:
+          this.showInfoNotification(
+            'Logged Out',
+            'You have been logged out successfully.'
+          );
+          break;
+
+        case DomainEventType.GuestModeActivated:
+          this.showInfoNotification(
+            'Guest Mode',
+            'You are using ResqLink as a guest. Some features may be limited. Sign up for full access.'
           );
           break;
       }
