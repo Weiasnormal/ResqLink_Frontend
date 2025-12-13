@@ -45,6 +45,17 @@ export const useGenerateOtp = () => {
   });
 };
 
+export const useGenerateLoginOtp = () => {
+  return useMutation({
+    mutationFn: (data: GenerateOtpRequest) => authApi.generateLoginOtp(data),
+    onSuccess: (response) => {
+      if (!response.success) {
+        throw new Error(response.error || 'Login OTP generation failed');
+      }
+    },
+  });
+};
+
 export const useVerifyOtp = () => {
   return useMutation({
     mutationFn: (data: VerifyOtpRequest) => authApi.verifyOtp(data),

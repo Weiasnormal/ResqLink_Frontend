@@ -52,7 +52,7 @@ const ReportCard: React.FC<ReportCardProps> = ({ report, onPress, fullWidth = fa
       <View style={styles.reportMainContent}>
         <View style={styles.reportImageContainer}>
           <Image 
-            source={require('../../../assets/defaultimage.png')} 
+            source={report.image ? { uri: `data:image/jpeg;base64,${report.image}` } : require('../../../assets/defaultimage.png')} 
             style={styles.reportImage}
             resizeMode="cover"
           />

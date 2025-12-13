@@ -79,8 +79,8 @@ export const validateReportData = (data: {
   category: string;
   location?: any;
 }): string | null => {
-  if (!data.category || data.category === 'none') {
-    return 'Please select a category';
+  if (!data.category || data.category === '' || data.category === 'other') {
+    return 'Please select a valid category';
   }
   
   if (!data.location) {

@@ -19,7 +19,7 @@ import { router } from 'expo-router';
 
 // Import API hooks and utilities
 import { useReports, useReportsByStatus } from '../_hooks/useApi';
-import { Status, mapStatusToString } from '../_api/reports';
+import { Status, mapStatusToString, Category } from '../_api/reports';
 import { formatApiError } from '../_utils/apiHelpers';
 import { 
   filterReports, 
@@ -43,9 +43,9 @@ const RecentReportScreen: React.FC<RecentReportScreenProps> = ({ onBack }) => {
   const [isAnimatingOut, setIsAnimatingOut] = useState(false);
 
   // API hooks for different report states
-  const { data: allReports, isLoading: loadingAll, error: errorAll } = useReports({ pageSize: 50, pageOffset: 0 });
-  const { data: submittedReports, isLoading: loadingSubmitted, error: errorSubmitted } = useReportsByStatus(Status.Submitted, { pageSize: 50, pageOffset: 0 });
-  const { data: reviewReports, isLoading: loadingReview, error: errorReview } = useReportsByStatus(Status.Under_Review, { pageSize: 50, pageOffset: 0 });
+  const { data: allReports, isLoading: loadingAll, error: errorAll } = useReports({ pageSize: 50, pageOffset: 1 });
+  const { data: submittedReports, isLoading: loadingSubmitted, error: errorSubmitted } = useReportsByStatus(Status.Submitted, { pageSize: 50, pageOffset: 1 });
+  const { data: reviewReports, isLoading: loadingReview, error: errorReview } = useReportsByStatus(Status.Under_Review, { pageSize: 50, pageOffset: 1 });
   
   const slideAnimation = useSlideIn({ 
     direction: 'right', 
@@ -59,21 +59,23 @@ const RecentReportScreen: React.FC<RecentReportScreenProps> = ({ onBack }) => {
 
   // Helper function to map category to icon
   const getCategoryIcon = (category: string): string => {
-    switch (category.toLowerCase()) {
-      case 'fire':
-        return 'flame';
-      case 'medical':
-        return 'medical';
-      case 'accident':
-        return 'car-crash';
-      case 'crime':
-        return 'shield-half';
-      case 'disaster':
-        return 'warning';
-      case 'other':
-      default:
-        return 'alert-circle';
+    const categoryLower = category.toLowerCase();
+    if (categoryLower.includes('traffic') || categoryLower.includes('accident')) {
+      return 'car-crash';
     }
+    if (categoryLower.includes('fire')) {
+      return 'flame';
+    }
+    if (categoryLower.includes('flood')) {
+      return 'water';
+    }
+    if (categoryLower.includes('structural') || categoryLower.includes('damage')) {
+      return 'home';
+    }
+    if (categoryLower.includes('medical') || categoryLower.includes('emergency')) {
+      return 'medical';
+    }
+    return 'alert-circle'; // Other / General
   };
 
   // Get filtered reports based on active filter
@@ -92,20 +94,27 @@ const RecentReportScreen: React.FC<RecentReportScreenProps> = ({ onBack }) => {
     }
 
     // Transform API data to match ReportCard expected format
-    return apiReports.map(report => ({
-      id: report.id,
-      title: report.title || report.description || report.category || 'Emergency Report',
-      status: mapStatusToString(report.status),
-      type: report.category, // Use category as type
-      typeIcon: getCategoryIcon(report.category), // Map category to icon
-      date: new Date(report.createdAt).toLocaleDateString('en-US', {
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric',
-      }),
-      location: `${report.location.latitude.toFixed(4)}, ${report.location.longitude.toFixed(4)}`, // Format as string
-      image: report.image, // Include image if available
-    }));
+    return apiReports.map(report => {
+      // Convert category enum to string
+      const categoryString = typeof report.category === 'string' 
+        ? report.category 
+        : Object.keys(Category).find(key => Category[key as keyof typeof Category] === report.category) || 'Other';
+      
+      return {
+        id: report.id,
+        title: report.title || report.description || categoryString || 'Emergency Report',
+        status: mapStatusToString(report.status),
+        type: categoryString, // Use category as type
+        typeIcon: getCategoryIcon(categoryString), // Map category to icon
+        date: new Date(report.createdAt).toLocaleDateString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric',
+        }),
+        location: report.location.reverseGeoCode || 'Location not specified', // Use reverseGeoCode
+        image: report.images && report.images.length > 0 ? report.images[0] : undefined, // Use first image only
+      };
+    });
   };
 
   const filteredReports = getFilteredReports();

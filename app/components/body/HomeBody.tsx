@@ -32,8 +32,8 @@ const HomeBody: React.FC<HomeBodyProps> = ({ onTabPress, onRecentReports }) => {
   const [selectedCategory, setSelectedCategory] = useState<DepartmentCategory | null>(null);
   const [scaleAnim] = useState(new Animated.Value(1));
 
-  // Fetch real reports from API
-  const { data: allReports = [], isLoading: reportsLoading, error: reportsError } = useReports({ pageSize: 50, pageOffset: 0 });
+  // Fetch real reports from API (pageOffset is 1-based)
+  const { data: allReports = [], isLoading: reportsLoading, error: reportsError } = useReports({ pageSize: 50, pageOffset: 1 });
 
   // Debug logging
   React.useEffect(() => {
@@ -54,21 +54,23 @@ const HomeBody: React.FC<HomeBodyProps> = ({ onTabPress, onRecentReports }) => {
 
   // Helper function to map category to icon
   const getCategoryIcon = (category: string): string => {
-    switch (category.toLowerCase()) {
-      case 'fire':
-        return 'flame';
-      case 'medical':
-        return 'medical';
-      case 'accident':
-        return 'car-crash';
-      case 'crime':
-        return 'shield-half';
-      case 'disaster':
-        return 'warning';
-      case 'other':
-      default:
-        return 'alert-circle';
+    const categoryLower = category.toLowerCase();
+    if (categoryLower.includes('traffic') || categoryLower.includes('accident')) {
+      return 'car-crash';
     }
+    if (categoryLower.includes('fire')) {
+      return 'flame';
+    }
+    if (categoryLower.includes('flood')) {
+      return 'water';
+    }
+    if (categoryLower.includes('structural') || categoryLower.includes('damage')) {
+      return 'home';
+    }
+    if (categoryLower.includes('medical') || categoryLower.includes('emergency')) {
+      return 'medical';
+    }
+    return 'alert-circle'; // Other / General
   };
 
   // Transform API reports to match ReportCard format and limit to 5
@@ -91,7 +93,7 @@ const HomeBody: React.FC<HomeBodyProps> = ({ onTabPress, onRecentReports }) => {
           day: 'numeric',
           year: 'numeric',
         }),
-        location: `${report.location.latitude.toFixed(4)}, ${report.location.longitude.toFixed(4)}`,
+        location: report.location.reverseGeoCode || 'Location not specified',
         image: report.images && report.images.length > 0 ? report.images[0] : undefined,
       };
     });

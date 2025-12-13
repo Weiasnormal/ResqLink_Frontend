@@ -3,10 +3,12 @@
  */
 
 export enum ReportCategory {
-  Fire = 'Fire',
-  Electric = 'Electric',
-  Flood = 'Flood',
-  Violence = 'Violence',
+  TrafficAccident = 'Traffic Accident',
+  FireIncident = 'Fire Incident',
+  Flooding = 'Flooding',
+  StructuralDamage = 'Structural Damage',
+  MedicalEmergency = 'Medical Emergency',
+  Other = 'Other',
 }
 
 export enum ReportStatus {

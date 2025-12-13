@@ -88,12 +88,20 @@ export const authApi = {
   // Verify OTP for login and get JWT token
   verifyOtp: async (data: VerifyOtpRequest): Promise<ApiResponse<string>> => {
     try {
+      console.log('🔐 Verifying OTP for login...');
       const response = await apiClient.post('/otp/login/verify', {
         mobileNumber: data.mobileNumber,
         otp: data.otp,
       });
       
-      if (response.data) {
+      console.log('📦 Login verify response:', {
+        status: response.status,
+        hasData: !!response.data,
+        dataType: typeof response.data,
+        data: response.data,
+      });
+      
+      if (response.data && typeof response.data === 'string') {
         // Store the JWT token
         console.log('💾 Storing token in SecureStore with key:', TOKEN_KEY);
         await SecureStore.setItemAsync(TOKEN_KEY, response.data);
@@ -102,10 +110,18 @@ export const authApi = {
         // Verify it was stored
         const storedToken = await SecureStore.getItemAsync(TOKEN_KEY);
         console.log('🔍 Verification - Token retrieved:', !!storedToken);
+        
+        return handleApiResponse<string>(response);
+      } else {
+        // Backend returned 202 Accepted without token - this is a backend bug
+        console.error('⚠️ Backend did not return a token! Response:', response.data);
+        return {
+          error: 'Authentication successful but no token received. Please contact support.',
+          success: false,
+        };
       }
-      
-      return handleApiResponse<string>(response);
     } catch (error) {
+      console.error('❌ OTP verification error:', error);
       return handleApiError(error);
     }
   },

@@ -126,12 +126,12 @@ const ReportBody = () => {
 
   const categories = [
     { label: 'Select Category', value: '' },
-    { label: 'Fire', value: 'fire' },
-    { label: 'Medical Emergency', value: 'medical' },
-    { label: 'Traffic Accident', value: 'accident' },
-    { label: 'Crime', value: 'crime' },
-    { label: 'Natural Disaster', value: 'disaster' },
-    { label: 'Other', value: 'other' },
+    { label: 'Traffic Accident', value: 'traffic accident' },
+    { label: 'Fire Incident', value: 'fire incident' },
+    { label: 'Flooding', value: 'flooding' },
+    { label: 'Structural Damage', value: 'structural damage' },
+    { label: 'Medical Emergency', value: 'medical emergency' },
+    { label: 'Other / General Incident', value: 'other' },
   ];
 
   const handleAddPhoto = () => {
@@ -236,6 +236,7 @@ const ReportBody = () => {
           altitude: 0,
           accuracy: 10,
           altitudeAccuracy: 0,
+          reverseGeoCode: address, // Include reverse geocoded address
         },
       };
 
@@ -245,6 +246,7 @@ const ReportBody = () => {
         console.log('  - Images count:', reportData.images.length);
         console.log('  - Total size:', `${totalSizeKB} KB`);
         console.log('  - Location:', `${reportData.location.latitude}, ${reportData.location.longitude}`);
+        console.log('  - ReverseGeoCode:', reportData.location.reverseGeoCode);
 
       // Submit report
       const result = await createReportMutation.mutateAsync(reportData);

@@ -21,7 +21,7 @@ import { useRouter } from 'expo-router';
 import InlineTextField from '../components/inputs/InlineTextField';
 
 // Import API hooks
-import { useGenerateOtp } from '../_hooks/useApi';
+import { useGenerateLoginOtp } from '../_hooks/useApi';
 import { formatApiError, formatPhoneForApi } from '../_utils/apiHelpers';
 import { redirectIfAuthenticated } from '../_utils/authGuard';
 
@@ -32,7 +32,7 @@ const LogInNumber: React.FC = () => {
   const [showVerifyScreen, setShowVerifyScreen] = useState(false);
 
   // API hooks
-  const generateOtpMutation = useGenerateOtp();
+  const generateOtpMutation = useGenerateLoginOtp();
 
   const slideAnimation = useSlideIn({
     direction: 'right',

@@ -2,11 +2,12 @@ import { apiClient, handleApiResponse, handleApiError, ApiResponse } from './con
 
 
 export enum Category {
-  None = 0,
-  Fire = 1,
-  Electric = 2,
-  Flood = 4,
-  Violence = 8,
+  Other = 32,
+  TrafficAccident = 4,
+  FireIncident = 3,
+  Flooding = 8,
+  StructuralDamage = 9,
+  MedicalEmergency = 2,
 }
 
 export enum Status {
@@ -23,6 +24,7 @@ export interface Location {
   altitude: number;
   accuracy: number;
   altitudeAccuracy: number;
+  reverseGeoCode?: string; // Reverse geocoded address for readable location
 }
 
 export interface CreateReportRequest {
@@ -55,21 +57,36 @@ export const reportsApi = {
   // Create new report
   create: async (data: CreateReportRequest): Promise<ApiResponse<string>> => {
     try {
+      console.log('📤 Creating report with data:', {
+        imageCount: data.images?.length || 0,
+        category: data.category,
+        hasDescription: !!data.description,
+        location: data.location,
+      });
+      
       const response = await apiClient.post('/reports', {
-        // Title: data.title, 
-        Images: data.images || [], 
+        Images: data.images || [], // Backend expects 'Image' not 'Images'
         Category: data.category,
         Description: data.description,
         Location: {
           Latitude: data.location.latitude,
           Longitude: data.location.longitude,
           Altitude: data.location.altitude,
-          Accuracy: data.location.accuracy,
-          AltitudeAccuracy: data.location.altitudeAccuracy,
+          Accuracy: Math.round(data.location.accuracy), 
+          AltitudeAccuracy: Math.round(data.location.altitudeAccuracy),
+          ReverseGeoCode: data.location.reverseGeoCode || '', // Reverse geocoded address
         },
       });
+      
+      console.log('✅ Report created successfully:', response.data);
       return handleApiResponse<string>(response);
-    } catch (error) {
+    } catch (error: any) {
+      console.error('❌ Report creation failed:', {
+        status: error.response?.status,
+        statusText: error.response?.statusText,
+        data: error.response?.data,
+        message: error.message,
+      });
       return handleApiError(error);
     }
   },
@@ -77,16 +94,25 @@ export const reportsApi = {
   // Get all reports with pagination
   getAll: async (params: GetReportsRequest = {}): Promise<ApiResponse<ReportResponse[]>> => {
     try {
-      const queryParams = new URLSearchParams();
-      if (params.sort) queryParams.append('sort', params.sort);
-      if (params.pageSize) queryParams.append('pageSize', params.pageSize.toString());
-      if (params.pageOffset) queryParams.append('pageoffset', params.pageOffset.toString());
+      // Backend requires all parameters, provide defaults (pageoffset is 1-based)
+      const sort = params.sort || 'CreatedAt';
+      const pageSize = params.pageSize ?? 50;
+      const pageOffset = params.pageOffset ?? 1;
+      
+      const queryParams = new URLSearchParams({
+        sort: sort,
+        pageSize: pageSize.toString(),
+        pageoffset: pageOffset.toString(),
+      });
 
-      const url = `/reports${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
+      const url = `/reports?${queryParams.toString()}`;
       console.log('📥 Fetching reports from:', url);
       
       const response = await apiClient.get(url);
       console.log('✅ Reports fetched successfully, count:', response.data?.length || 0);
+      if (response.data?.length > 0) {
+        console.log('📍 Sample report reverseGeoCode:', response.data[0].location?.reverseGeoCode || 'No address');
+      }
       
       // Backend should return base64 strings directly
       return handleApiResponse<ReportResponse[]>(response);
@@ -161,16 +187,28 @@ export const deleteReport = reportsApi.delete;
 // Helper function to convert frontend category strings to backend enum
 export const mapCategoryToEnum = (categoryString: string): Category => {
   switch (categoryString.toLowerCase()) {
+    case 'traffic':
+    case 'accident':
+    case 'traffic accident':
+      return Category.TrafficAccident;
     case 'fire':
-      return Category.Fire;
-    case 'electric':
-      return Category.Electric;
+    case 'fire incident':
+      return Category.FireIncident;
     case 'flood':
-      return Category.Flood;
-    case 'violence':
-      return Category.Violence;
+    case 'flooding':
+      return Category.Flooding;
+    case 'structural':
+    case 'damage':
+    case 'structural damage':
+      return Category.StructuralDamage;
+    case 'medical':
+    case 'emergency':
+    case 'medical emergency':
+      return Category.MedicalEmergency;
+    case 'other':
+    case 'general':
     default:
-      return Category.None;
+      return Category.Other;
   }
 };
 
