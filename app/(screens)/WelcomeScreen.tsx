@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Image, TouchableOpacity, StatusBar } from 'reac
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import * as SecureStore from 'expo-secure-store';
 import WhiteLogo from '../../assets/White-Logo.svg';
 import WelcomeIllustration from '../../assets/Welcome-Illustration1.svg';
 import { redirectIfAuthenticated } from '../_utils/authGuard';
@@ -67,6 +68,9 @@ const WelcomeScreen: React.FC = () => {
           <TouchableOpacity
             style={styles.guestButton}
             onPress={async () => {
+              // Mark user as guest in secure storage
+              await SecureStore.setItemAsync('resqline_guest_mode', 'true');
+              
               // Show guest mode notification
               await notificationManager.handleDomainEvent({
                 eventId: Date.now().toString(),
@@ -78,7 +82,7 @@ const WelcomeScreen: React.FC = () => {
                 correlationId: '',
               });
               
-              router.push({ pathname: '/(tabs)', params: { tab: 'home' } });
+              router.push({ pathname: '/(tabs)', params: { tab: 'sos' } });
             }}
           >
             <Text style={styles.guestText}>Continue as Guest</Text>

@@ -6,6 +6,7 @@ export interface UserProfile {
   lastName?: string;
   phoneNumber?: string;
   username?: string;
+  isGuest?: boolean;
   [key: string]: any;
 }
 
@@ -15,6 +16,8 @@ interface UserProfileContextValue {
   setProfile: (next: UserProfile) => Promise<void>;
   getFullName: () => string;
   clearProfile: () => Promise<void>;
+  isGuest: () => boolean;
+  setGuestMode: (isGuest: boolean) => Promise<void>;
 }
 
 const STORAGE_KEY = 'resqline_user_profile';
@@ -82,6 +85,14 @@ export const UserProfileProvider: React.FC<{ children: React.ReactNode }> = ({ c
     return `${fn}${fn && ln ? ' ' : ''}${ln}`.trim();
   };
 
+  const isGuest = () => {
+    return profile.isGuest === true;
+  };
+
+  const setGuestMode = async (guest: boolean) => {
+    await updateProfile({ isGuest: guest });
+  };
+
   return (
     <UserProfileContext.Provider
       value={{
@@ -90,6 +101,8 @@ export const UserProfileProvider: React.FC<{ children: React.ReactNode }> = ({ c
         setProfile,
         getFullName,
         clearProfile,
+        isGuest,
+        setGuestMode,
       }}
     >
       {children}
