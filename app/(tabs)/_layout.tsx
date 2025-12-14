@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Alert } from 'react-native';
-import * as SecureStore from 'expo-secure-store';
+import { View, Text, TextInput } from 'react-native';
 
 import WelcomeScreen from '../(screens)/WelcomeScreen';
 import ReportScreen from '../(screens)/ReportScreen';
@@ -35,27 +34,7 @@ const TabsLayout = () => {
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [isChangingNumberFromProfile, setIsChangingNumberFromProfile] = useState(false);
   const [isViewingRecentReports, setIsViewingRecentReports] = useState(false);
-  const [isGuestMode, setIsGuestMode] = useState(false);
-
-  // Check for guest mode on mount
-  useEffect(() => {
-    const checkGuestMode = async () => {
-      const guestMode = await SecureStore.getItemAsync('resqline_guest_mode');
-      setIsGuestMode(guestMode === 'true');
-    };
-    checkGuestMode();
-  }, []);
-
   const handleTabPress = (tab: string) => {
-    // Restrict guest users to only SOS and Hotline
-    if (isGuestMode && tab !== 'sos' && tab !== 'hotline') {
-      Alert.alert(
-        'Sign Up Required',
-        'This feature is only available for registered users. Please sign up or log in to access all features.',
-        [{ text: 'OK' }]
-      );
-      return;
-    }
     setActiveTab(tab);
     setIsEditingProfile(false);
     setIsViewingRecentReports(false);

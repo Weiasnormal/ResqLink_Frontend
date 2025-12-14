@@ -3,7 +3,6 @@ import { View, Text, StyleSheet, Image, TouchableOpacity, StatusBar } from 'reac
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import * as SecureStore from 'expo-secure-store';
 import WhiteLogo from '../../assets/White-Logo.svg';
 import WelcomeIllustration from '../../assets/Welcome-Illustration1.svg';
 import { redirectIfAuthenticated } from '../_utils/authGuard';
@@ -65,12 +64,10 @@ const WelcomeScreen: React.FC = () => {
             <Text style={styles.logInText}>Log In</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity
+          {/* Continue as Guest - Commented out */}
+          {/* <TouchableOpacity
             style={styles.guestButton}
             onPress={async () => {
-              // Mark user as guest in secure storage
-              await SecureStore.setItemAsync('resqline_guest_mode', 'true');
-              
               // Show guest mode notification
               await notificationManager.handleDomainEvent({
                 eventId: Date.now().toString(),
@@ -82,11 +79,11 @@ const WelcomeScreen: React.FC = () => {
                 correlationId: '',
               });
               
-              router.push({ pathname: '/(tabs)', params: { tab: 'sos' } });
+              router.push({ pathname: '/(tabs)', params: { tab: 'home' } });
             }}
           >
             <Text style={styles.guestText}>Continue as Guest</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
       </View>
     </View>
@@ -147,7 +144,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 30,
     alignItems: 'center',
-    gap: 12,
+    gap: 20,
+    paddingBottom: 25,
   },
   tagline: {
     fontSize: 24,
@@ -181,6 +179,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 12,
+    paddingBottom: 10,
   },
   logInText: {
     color: '#FF9427',
